@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from db import db
 from psycopg2 import _psycopg
 from flask_jwt_extended import JWTManager
+from flask_migrate import Migrate
 
 
 def create_app(is_test=False):
@@ -20,8 +21,10 @@ def create_app(is_test=False):
     #     username = db.Column(db.String(80), unique=True, nullable=False)
     #     email = db.Column(db.String)
 
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    #     db.create_all()
+
+    Migrate(app, db)
 
     app.config["DEBUG"] = True
 
@@ -47,6 +50,6 @@ def create_app(is_test=False):
     def needs_fresh_token_callback(_):
         return jsonify({"message": "Fresh token required"}), 401
 
-    api = Api(app)
+    # api = Api(app)
 
     return app
