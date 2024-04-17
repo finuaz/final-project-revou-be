@@ -1,7 +1,5 @@
-from sqlalchemy import Enum
 from db import db
 from flask_smorest import abort
-import re
 import logging
 
 
@@ -14,6 +12,8 @@ class TagModel(db.Model):
     updated_at = db.Column(
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
+
+    recipe_tags = db.relationship("RecipeTagRelationModel", back_populates="tags")
 
     def __init__(self, tagname):
         self.tagname = tagname

@@ -17,6 +17,8 @@ class SocialModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    users = db.relationship("UserModel", back_populates="socials")
+
     def __init__(self, user_id, phone, facebook, instagram, twitter):
         self.user_id = user_id
         self.phone = phone

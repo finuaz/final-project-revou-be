@@ -14,6 +14,8 @@ class AttachmentModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    recipes = db.relationship("RecipeModel", back_populates="attachments")
+
     def __init__(self, recipe_id, attachment_link):
         self.recipe_id = recipe_id
         self.attachment_link = attachment_link

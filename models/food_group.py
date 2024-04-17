@@ -13,6 +13,10 @@ class GroupModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    ingredient_groups = db.relationship(
+        "IngredientGroupRelationModel", back_populates="groups"
+    )
+
     def __init__(self, group):
         self.group = group
 

@@ -13,6 +13,10 @@ class CategoryModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    recipe_categories = db.relationship(
+        "RecipeCategoryRelationModel", back_populates="categories"
+    )
+
     def __init__(self, category):
         self.category = category
 

@@ -10,6 +10,9 @@ class RecipeTagRelationModel(db.Model):
     tag_id = db.Column(db.String, db.ForeignKey("Tag.id"), nullable=False)
     created_at = db.Column(db.DateTime(), server_default=db.func.now())
 
+    recipes = db.relationship("RecipeModel", back_populates="recipe_tags")
+    tags = db.relationship("TagModel", back_populates="recipe_tags")
+
     def __init__(self, recipe_id, tag_id):
         self.recipe_id = recipe_id
         self.tag_id = tag_id

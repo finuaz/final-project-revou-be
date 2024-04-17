@@ -26,6 +26,13 @@ class UserModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    likes = db.relationship("LikeModel", back_populates="users")
+    comments = db.relationship("CommentModel", back_populates="users")
+    rates = db.relationship("RateModel", back_populates="users")
+    socials = db.relationship("SocialModel", back_populates="users")
+    follower = db.relationship("FollowingModel", back_populates="follower_users")
+    followee = db.relationship("FollowingModel", back_populates="followee_users")
+
     def __init__(
         self,
         username,

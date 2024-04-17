@@ -10,6 +10,9 @@ class IngredientGroupRelationModel(db.Model):
     group_id = db.Column(db.String, db.ForeignKey("Group.id"), nullable=False)
     created_at = db.Column(db.DateTime(), server_default=db.func.now())
 
+    ingredients = db.relationship("IngredientModel", back_populates="ingredient_groups")
+    groups = db.relationship("GroupModel", back_populates="ingredient_groups")
+
     def __init__(self, ingredient_id, group_id):
         self.ingredient_id = ingredient_id
         self.group_id = group_id

@@ -10,6 +10,11 @@ class RecipeIngredientRelationModel(db.Model):
     ingredient_id = db.Column(db.String, db.ForeignKey("Ingredient.id"), nullable=False)
     created_at = db.Column(db.DateTime(), server_default=db.func.now())
 
+    recipes = db.relationship("RecipeModel", back_populates="recipe_ingredients")
+    ingredients = db.relationship(
+        "IngredientModel", back_populates="recipe_ingredients"
+    )
+
     def __init__(self, recipe_id, ingredient_id):
         self.recipe_id = recipe_id
         self.ingredient_id = ingredient_id

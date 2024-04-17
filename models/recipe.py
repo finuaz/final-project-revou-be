@@ -20,6 +20,25 @@ class RecipeModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    likes = db.relationship("LikeModel", back_populates="recipes")
+    comments = db.relationship("CommentModel", back_populates="recipes")
+    rates = db.relationship("RateModel", back_populates="recipes")
+    attachments = db.relationship("AttachmentModel", back_populates="recipes")
+    nutritions = db.relationship("NutritionModel", back_populates="recipes")
+
+    recipe_categories = db.relationship(
+        "RecipeCategoryRelationModel", back_populates="recipes"
+    )
+    recipe_ingredients = db.relationship(
+        "RecipeIngredientRelationModel", back_populates="recipes"
+    )
+    recipe_origins = db.relationship(
+        "RecipeOriginRelationModel", back_populates="recipes"
+    )
+    recipe_tags = db.relationship("RecipeTagRelationModel", back_populates="recipes")
+    recipe_tools = db.relationship("RecipeToolRelationModel", back_populates="recipes")
+    recipe_types = db.relationship("RecipeTypeRelationModel", back_populates="recipes")
+
     def __init__(
         self,
         author_id,

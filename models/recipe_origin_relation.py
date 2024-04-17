@@ -10,6 +10,9 @@ class RecipeOriginRelationModel(db.Model):
     origin_id = db.Column(db.String, db.ForeignKey("Origin.id"), nullable=False)
     created_at = db.Column(db.DateTime(), server_default=db.func.now())
 
+    recipes = db.relationship("RecipeModel", back_populates="recipe_origins")
+    origins = db.relationship("OriginModel", back_populates="recipe_origins")
+
     def __init__(self, recipe_id, origin_id):
         self.recipe_id = recipe_id
         self.origin_id = origin_id

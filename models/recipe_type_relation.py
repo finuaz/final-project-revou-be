@@ -10,6 +10,9 @@ class RecipeTypeRelationModel(db.Model):
     type_id = db.Column(db.String, db.ForeignKey("Type.id"), nullable=False)
     created_at = db.Column(db.DateTime(), server_default=db.func.now())
 
+    recipes = db.relationship("RecipeModel", back_populates="recipe_types")
+    types = db.relationship("TypeModel", back_populates="recipe_types")
+
     def __init__(self, recipe_id, type_id):
         self.recipe_id = recipe_id
         self.type_id = type_id

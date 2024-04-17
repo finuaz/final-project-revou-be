@@ -13,6 +13,8 @@ class TypeModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    recipe_types = db.relationship("RecipeTypeRelationModel", back_populates="types")
+
     def __init__(self, type):
         self.type = type
 

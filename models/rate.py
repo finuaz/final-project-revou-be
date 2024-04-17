@@ -15,8 +15,8 @@ class RateModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
-    user = db.relationship("UserModel", back_populates="likes")
-    recipe = db.relationship("RecipeModel", back_populates="likes")
+    users = db.relationship("UserModel", back_populates="rates")
+    recipes = db.relationship("RecipeModel", back_populates="rates")
 
     def __init__(self, user_id, recipe_id, value):
         self.user_id = user_id

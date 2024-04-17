@@ -13,6 +13,10 @@ class OriginModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    recipe_origins = db.relationship(
+        "RecipeOriginRelationModel", back_populates="origins"
+    )
+
     def __init__(self, origin):
         self.origin = origin
 

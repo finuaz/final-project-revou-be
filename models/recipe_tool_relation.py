@@ -10,6 +10,9 @@ class RecipeToolRelationModel(db.Model):
     tool_id = db.Column(db.String, db.ForeignKey("Tool.id"), nullable=False)
     created_at = db.Column(db.DateTime(), server_default=db.func.now())
 
+    recipes = db.relationship("RecipeModel", back_populates="recipe_tools")
+    tools = db.relationship("ToolModel", back_populates="recipe_tools")
+
     def __init__(self, recipe_id, tool_id):
         self.recipe_id = recipe_id
         self.tool_id = tool_id

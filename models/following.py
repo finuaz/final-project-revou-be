@@ -14,6 +14,9 @@ class FollowingModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    follower_users = db.relationship("UserModel", back_populates="follower")
+    followee_users = db.relationship("UserModel", back_populates="followee")
+
     def __init__(self, follower_id, followee_id):
         self.follower_id = follower_id
         self.followee_id = followee_id

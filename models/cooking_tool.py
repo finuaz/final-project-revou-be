@@ -13,6 +13,8 @@ class ToolModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    recipe_tools = db.relationship("RecipeToolRelationModel", back_populates="tools")
+
     def __init__(self, tool):
         self.tool = tool
 

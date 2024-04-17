@@ -16,6 +16,13 @@ class IngredientModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    recipe_ingredients = db.relationship(
+        "RecipeIngredientRelationModel", back_populates="ingredients"
+    )
+    ingredient_groups = db.relationship(
+        "IngredientGroupRelationModel", back_populates="ingredients"
+    )
+
     def __init__(self, ingredient, unit, calories_per_unit, fat_per_unit):
         self.ingredient = ingredient
         self.unit = unit

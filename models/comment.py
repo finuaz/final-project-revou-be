@@ -15,6 +15,9 @@ class CommentModel(db.Model):
         db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
+    users = db.relationship("UserModel", back_populates="comments")
+    recipes = db.relationship("RecipeModel", back_populates="comments")
+
     def __init__(self, recipe_id, user_id, message):
         self.recipe_id = recipe_id
         self.user_id = user_id
