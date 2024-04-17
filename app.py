@@ -12,7 +12,11 @@ def create_app(is_test=False):
     app = Flask(__name__)
     load_dotenv()
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+        "DATABASE_URI", "sqlite:///data.db"
+    )
+
+    print(os.getenv("DATABASE_URI"))
 
     db.init_app(app)
 
