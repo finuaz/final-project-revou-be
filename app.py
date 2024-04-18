@@ -23,6 +23,8 @@ def create_app(is_test=False):
         OPENAPI_URL_PREFIX="/",
     )
 
+    app.config["SQLALCHEMY_ECHO"] = True
+
     if is_test is True:
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
     else:
