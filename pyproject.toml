@@ -39,6 +39,7 @@ werkzeug = "^3.0.2"
 yarg = "^0.1.9"
 flask-migrate = "^4.0.7"
 psycopg2 = "^2.9.9"
+passlib = "^1.7.4"
 
 
 [build-system]
