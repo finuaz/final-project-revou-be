@@ -25,7 +25,7 @@ class UserModel(db.Model):
     reset_password_question = db.Column(db.String(255), nullable=True)
     reset_password_answer = db.Column(db.String(255), nullable=True)
     image = db.Column(db.String(255), nullable=True)
-    role = db.Column(Enum(UserRole), server_default="user")
+    role = db.Column(db.Enum(UserRole), nullable=False, default=UserRole.USER)
     bio = db.Column(db.String(300), nullable=True)
     location = db.Column(db.String(30), nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
