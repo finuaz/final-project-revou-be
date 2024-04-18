@@ -6,9 +6,13 @@ import logging
 class RecipeToolRelationModel(db.Model):
     __tablename__ = "Recipe_tool"
 
-    recipe_id = db.Column(db.String, db.ForeignKey("Recipe.id"), nullable=False)
-    tool_id = db.Column(db.String, db.ForeignKey("Tool.id"), nullable=False)
-    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+    recipe_id = db.Column(
+        db.Integer, db.ForeignKey("Recipe.id"), primary_key=True, nullable=False
+    )
+    tool_id = db.Column(
+        db.Integer, db.ForeignKey("Tool.id"), primary_key=True, nullable=False
+    )
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     recipes = db.relationship("RecipeModel", back_populates="recipe_tools")
     tools = db.relationship("ToolModel", back_populates="recipe_tools")

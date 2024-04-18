@@ -8,18 +8,18 @@ class FollowingModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     follower_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
-    followee_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
-    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+    followed_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
+        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
     follower_users = db.relationship("UserModel", back_populates="follower")
-    followee_users = db.relationship("UserModel", back_populates="followee")
+    followed_users = db.relationship("UserModel", back_populates="followed")
 
-    def __init__(self, follower_id, followee_id):
+    def __init__(self, follower_id, followed_id):
         self.follower_id = follower_id
-        self.followee_id = followee_id
+        self.followed_id = followed_id
 
     def add_following(self):
         try:

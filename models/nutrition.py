@@ -9,7 +9,7 @@ class NutritionModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     recipe_id = db.Column(db.Integer, db.ForeignKey("Recipe.id"))
     serving_per_container = db.Column(db.Integer, nullable=True)
-    serving_size = db.Column(db.String, nullable=True)
+    serving_size = db.Column(db.String(20), nullable=True)
 
     calories = db.Column(db.DECIMAL(10, 2), nullable=True)
     total_fat = db.Column(db.DECIMAL(10, 2), nullable=True)
@@ -24,9 +24,9 @@ class NutritionModel(db.Model):
     potassium = db.Column(db.DECIMAL(10, 2), nullable=True)
     iron = db.Column(db.DECIMAL(10, 2), nullable=True)
 
-    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
+        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
     recipes = db.relationship("RecipeModel", back_populates="nutritions")

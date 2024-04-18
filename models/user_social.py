@@ -1,6 +1,7 @@
 from db import db
 from flask_smorest import abort
 import logging
+from datetime import datetime
 
 
 class SocialModel(db.Model):
@@ -8,13 +9,13 @@ class SocialModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
-    phone = db.Column(db.String, nullable=True)
-    facebook = db.Column(db.String, nullable=True)
-    instagram = db.Column(db.String, nullable=True)
-    twitter = db.Column(db.String, nullable=True)
-    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+    phone = db.Column(db.String(255), nullable=True)
+    facebook = db.Column(db.String(255), nullable=True)
+    instagram = db.Column(db.String(255), nullable=True)
+    twitter = db.Column(db.String(255), nullable=True)
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
+        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
     users = db.relationship("UserModel", back_populates="socials")

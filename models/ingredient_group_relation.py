@@ -6,9 +6,13 @@ import logging
 class IngredientGroupRelationModel(db.Model):
     __tablename__ = "Ingredient_group"
 
-    ingredient_id = db.Column(db.String, db.ForeignKey("Recipe.id"), nullable=False)
-    group_id = db.Column(db.String, db.ForeignKey("Group.id"), nullable=False)
-    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+    ingredient_id = db.Column(
+        db.Integer, db.ForeignKey("Ingredient.id"), primary_key=True, nullable=False
+    )
+    group_id = db.Column(
+        db.Integer, db.ForeignKey("Group.id"), primary_key=True, nullable=False
+    )
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
 
     ingredients = db.relationship("IngredientModel", back_populates="ingredient_groups")
     groups = db.relationship("GroupModel", back_populates="ingredient_groups")
