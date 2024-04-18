@@ -15,9 +15,9 @@ class RecipeModel(db.Model):
     servings = db.Column(db.Integer, nullable=False)
     budget = db.Column(db.DECIMAL(10, 2), nullable=False)
     instructions = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
+        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
     likes = db.relationship("LikeModel", back_populates="recipes")

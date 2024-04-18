@@ -9,9 +9,9 @@ class LikeModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"))
     recipe_id = db.Column(db.Integer, db.ForeignKey("Recipe.id"))
-    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
+        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
     users = db.relationship("UserModel", back_populates="likes")

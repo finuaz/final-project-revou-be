@@ -11,9 +11,9 @@ class IngredientModel(db.Model):
     unit = db.Column(db.String(10), nullable=False)
     calories_per_unit = db.Column(db.DECIMAL(10, 2), nullable=True)
     fat_per_unit = db.Column(db.DECIMAL(10, 2), nullable=True)
-    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
+        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
     recipe_ingredients = db.relationship(

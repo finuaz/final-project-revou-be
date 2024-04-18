@@ -8,9 +8,9 @@ class TypeModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     type = db.Column(db.String(20), nullable=False, unique=True)
-    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
+        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
     recipe_types = db.relationship("RecipeTypeRelationModel", back_populates="types")

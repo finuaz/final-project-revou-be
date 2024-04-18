@@ -3,6 +3,15 @@ from db import db
 from flask_smorest import abort
 import re
 import logging
+from datetime import datetime
+from enum import Enum
+
+
+class UserRole(Enum):
+    USER = "user"
+    ADMIN = "admin"
+    CHEF = "chef"
+    EXPERT = "expert"
 
 
 class UserModel(db.Model):
@@ -16,14 +25,12 @@ class UserModel(db.Model):
     reset_password_question = db.Column(db.String, nullable=True)
     reset_password_answer = db.Column(db.String, nullable=True)
     image = db.Column(db.String, nullable=True)
-    role = db.Column(
-        Enum("user", "admin", "chef", "expert", name="user_role"), server_default="user"
-    )
+    role = db.Column(Enum(UserRole), server_default="user")
     bio = db.Column(db.String(300), nullable=True)
     location = db.Column(db.String(30), nullable=True)
-    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
+        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
     likes = db.relationship("LikeModel", back_populates="users")
@@ -31,7 +38,7 @@ class UserModel(db.Model):
     rates = db.relationship("RateModel", back_populates="users")
     socials = db.relationship("SocialModel", back_populates="users")
     follower = db.relationship("FollowingModel", back_populates="follower_users")
-    followee = db.relationship("FollowingModel", back_populates="followee_users")
+    followed = db.relationship("FollowingModel", back_populates="followed_users")
 
     def __init__(
         self,

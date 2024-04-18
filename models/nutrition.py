@@ -24,9 +24,9 @@ class NutritionModel(db.Model):
     potassium = db.Column(db.DECIMAL(10, 2), nullable=True)
     iron = db.Column(db.DECIMAL(10, 2), nullable=True)
 
-    created_at = db.Column(db.DateTime(), server_default=db.func.now())
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
-        db.DateTime(), server_onupdate=db.func.now(), server_default=db.func.now()
+        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
     )
 
     recipes = db.relationship("RecipeModel", back_populates="nutritions")
