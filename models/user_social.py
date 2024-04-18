@@ -9,10 +9,10 @@ class SocialModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
-    phone = db.Column(db.String, nullable=True)
-    facebook = db.Column(db.String, nullable=True)
-    instagram = db.Column(db.String, nullable=True)
-    twitter = db.Column(db.String, nullable=True)
+    phone = db.Column(db.String(255), nullable=True)
+    facebook = db.Column(db.String(255), nullable=True)
+    instagram = db.Column(db.String(255), nullable=True)
+    twitter = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
         db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()

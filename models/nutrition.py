@@ -9,7 +9,7 @@ class NutritionModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     recipe_id = db.Column(db.Integer, db.ForeignKey("Recipe.id"))
     serving_per_container = db.Column(db.Integer, nullable=True)
-    serving_size = db.Column(db.String, nullable=True)
+    serving_size = db.Column(db.String(20), nullable=True)
 
     calories = db.Column(db.DECIMAL(10, 2), nullable=True)
     total_fat = db.Column(db.DECIMAL(10, 2), nullable=True)
