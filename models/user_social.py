@@ -1,7 +1,7 @@
 from db import db
 from flask_smorest import abort
 import logging
-from datetime import datetime
+from sqlalchemy import func
 
 
 class SocialModel(db.Model):
@@ -13,9 +13,14 @@ class SocialModel(db.Model):
     facebook = db.Column(db.String(255), nullable=True)
     instagram = db.Column(db.String(255), nullable=True)
     twitter = db.Column(db.String(255), nullable=True)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = db.Column(
-        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
+        db.TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     users = db.relationship("UserModel", back_populates="socials")
@@ -34,6 +39,7 @@ class SocialModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_user_social(cls, user_id):
         user = cls.query.filter_by(id=user_id).first()
         if user is None:

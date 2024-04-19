@@ -1,6 +1,7 @@
 from db import db
 from flask_smorest import abort
 import logging
+from sqlalchemy import func
 
 
 class RecipeOriginRelationModel(db.Model):
@@ -12,7 +13,9 @@ class RecipeOriginRelationModel(db.Model):
     origin_id = db.Column(
         db.Integer, db.ForeignKey("Origin.id"), primary_key=True, nullable=False
     )
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
 
     recipes = db.relationship("RecipeModel", back_populates="recipe_origins")
     origins = db.relationship("OriginModel", back_populates="recipe_origins")
@@ -28,6 +31,7 @@ class RecipeOriginRelationModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_recipe_origin(cls, recipe_origin_id):
         recipe_origin = cls.query.filter_by(id=recipe_origin_id).first()
         if recipe_origin is None:

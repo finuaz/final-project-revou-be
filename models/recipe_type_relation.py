@@ -1,6 +1,7 @@
 from db import db
 from flask_smorest import abort
 import logging
+from sqlalchemy import func
 
 
 class RecipeTypeRelationModel(db.Model):
@@ -12,7 +13,9 @@ class RecipeTypeRelationModel(db.Model):
     type_id = db.Column(
         db.Integer, db.ForeignKey("Type.id"), primary_key=True, nullable=False
     )
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
 
     recipes = db.relationship("RecipeModel", back_populates="recipe_types")
     types = db.relationship("TypeModel", back_populates="recipe_types")
@@ -28,6 +31,7 @@ class RecipeTypeRelationModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_recipe_type(cls, recipe_type_id):
         recipe_type = cls.query.filter_by(id=recipe_type_id).first()
         if recipe_type is None:

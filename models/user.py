@@ -1,10 +1,9 @@
-from sqlalchemy import Enum
 from db import db
 from flask_smorest import abort
 import re
 import logging
-from datetime import datetime
 from enum import Enum
+from sqlalchemy import func
 
 
 class UserRole(Enum):
@@ -28,9 +27,15 @@ class UserModel(db.Model):
     role = db.Column(db.Enum(UserRole), nullable=False, default=UserRole.USER)
     bio = db.Column(db.String(300), nullable=True)
     location = db.Column(db.String(30), nullable=True)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    view_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = db.Column(
-        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
+        db.TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     likes = db.relationship("LikeModel", back_populates="users")
@@ -51,6 +56,7 @@ class UserModel(db.Model):
         role,
         bio,
         location,
+        view_count,
     ):
         self.username = username
         self.email = email
@@ -61,6 +67,7 @@ class UserModel(db.Model):
         self.role = role
         self.bio = bio
         self.location = location
+        self.view_count = view_count
 
     def add_user(self):
         try:
@@ -70,6 +77,7 @@ class UserModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_user(cls, user_id):
         user = cls.query.filter_by(id=user_id).first()
         if user is None:

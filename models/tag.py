@@ -1,6 +1,7 @@
 from db import db
 from flask_smorest import abort
 import logging
+from sqlalchemy import func
 
 
 class TagModel(db.Model):
@@ -8,10 +9,14 @@ class TagModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     tagname = db.Column(db.String(20), nullable=False, unique=True)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = db.Column(
-        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
+        db.TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     recipe_tags = db.relationship("RecipeTagRelationModel", back_populates="tags")
@@ -26,6 +31,7 @@ class TagModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_tag(cls, tag_id):
         tag = cls.query.filter_by(id=tag_id).first()
         if tag is None:

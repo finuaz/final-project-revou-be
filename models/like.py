@@ -1,6 +1,7 @@
 from db import db
 from flask_smorest import abort
 import logging
+from sqlalchemy import func
 
 
 class LikeModel(db.Model):
@@ -9,9 +10,14 @@ class LikeModel(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"))
     recipe_id = db.Column(db.Integer, db.ForeignKey("Recipe.id"))
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = db.Column(
-        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
+        db.TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     users = db.relationship("UserModel", back_populates="likes")
@@ -28,6 +34,7 @@ class LikeModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_like(cls, like_id):
         like = cls.query.filter_by(id=like_id).first()
         if like is None:

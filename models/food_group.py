@@ -1,6 +1,7 @@
 from db import db
 from flask_smorest import abort
 import logging
+from sqlalchemy import func
 
 
 class GroupModel(db.Model):
@@ -8,9 +9,14 @@ class GroupModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     group = db.Column(db.String(25), nullable=False, unique=True)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = db.Column(
-        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
+        db.TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     ingredient_groups = db.relationship(
@@ -27,6 +33,7 @@ class GroupModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_group(cls, group_id):
         group = cls.query.filter_by(id=group_id).first()
         if group is None:

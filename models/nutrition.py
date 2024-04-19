@@ -1,6 +1,7 @@
 from db import db
 from flask_smorest import abort
 import logging
+from sqlalchemy import func
 
 
 class NutritionModel(db.Model):
@@ -24,9 +25,14 @@ class NutritionModel(db.Model):
     potassium = db.Column(db.DECIMAL(10, 2), nullable=True)
     iron = db.Column(db.DECIMAL(10, 2), nullable=True)
 
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = db.Column(
-        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
+        db.TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     recipes = db.relationship("RecipeModel", back_populates="nutritions")
@@ -70,6 +76,7 @@ class NutritionModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_nutrition(cls, nutrition_id):
         nutrition = cls.query.filter_by(id=nutrition_id).first()
         if nutrition is None:

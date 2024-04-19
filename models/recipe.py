@@ -1,6 +1,7 @@
 from db import db
 from flask_smorest import abort
 import logging
+from sqlalchemy import func
 
 
 class RecipeModel(db.Model):
@@ -15,9 +16,15 @@ class RecipeModel(db.Model):
     servings = db.Column(db.Integer, nullable=False)
     budget = db.Column(db.DECIMAL(10, 2), nullable=False)
     instructions = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    view_count = db.Column(db.Integer, default=0)
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = db.Column(
-        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
+        db.TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     likes = db.relationship("LikeModel", back_populates="recipes")
@@ -49,6 +56,7 @@ class RecipeModel(db.Model):
         servings,
         budget,
         instructions,
+        view_count,
     ):
         self.author_id = author_id
         self.title = title
@@ -58,6 +66,7 @@ class RecipeModel(db.Model):
         self.servings = servings
         self.budget = budget
         self.instructions = instructions
+        self.view_count = view_count
 
     def add_recipe(self):
         try:
@@ -66,6 +75,7 @@ class RecipeModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_recipe(cls, recipe_id):
         recipe = cls.query.filter_by(id=recipe_id).first()
         if recipe is None:
