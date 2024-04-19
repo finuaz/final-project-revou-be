@@ -1,10 +1,9 @@
-from sqlalchemy import Enum
 from db import db
 from flask_smorest import abort
 import re
 import logging
-from datetime import datetime
 from enum import Enum
+from sqlalchemy import func
 
 
 class UserRole(Enum):
@@ -29,9 +28,14 @@ class UserModel(db.Model):
     bio = db.Column(db.String(300), nullable=True)
     location = db.Column(db.String(30), nullable=True)
     view_count = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = db.Column(
-        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
+        db.TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     likes = db.relationship("LikeModel", back_populates="users")

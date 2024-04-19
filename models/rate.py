@@ -1,6 +1,7 @@
 from db import db
 from flask_smorest import abort
 import logging
+from sqlalchemy import func
 
 
 class RateModel(db.Model):
@@ -10,9 +11,14 @@ class RateModel(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"))
     recipe_id = db.Column(db.Integer, db.ForeignKey("Recipe.id"))
     value = db.Column(db.Integer, nullable=False)
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = db.Column(
-        db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
+        db.TIMESTAMP(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
 
     users = db.relationship("UserModel", back_populates="rates")

@@ -1,6 +1,7 @@
 from db import db
 from flask_smorest import abort
 import logging
+from sqlalchemy import func
 
 
 class RecipeIngredientRelationModel(db.Model):
@@ -12,7 +13,9 @@ class RecipeIngredientRelationModel(db.Model):
     ingredient_id = db.Column(
         db.Integer, db.ForeignKey("Ingredient.id"), primary_key=True, nullable=False
     )
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
+    created_at = db.Column(
+        db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
+    )
 
     recipes = db.relationship("RecipeModel", back_populates="recipe_ingredients")
     ingredients = db.relationship(
