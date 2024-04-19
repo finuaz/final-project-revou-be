@@ -31,6 +31,7 @@ class RecipeOriginRelationModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_recipe_origin(cls, recipe_origin_id):
         recipe_origin = cls.query.filter_by(id=recipe_origin_id).first()
         if recipe_origin is None:

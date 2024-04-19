@@ -31,6 +31,7 @@ class RecipeTagRelationModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_recipe_tag(cls, recipe_tag_id):
         recipe_tag = cls.query.filter_by(id=recipe_tag_id).first()
         if recipe_tag is None:

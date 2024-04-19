@@ -33,6 +33,7 @@ class RecipeIngredientRelationModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_recipe_ingredient(cls, recipe_ingredient_id):
         recipe_ingredient = cls.query.filter_by(id=recipe_ingredient_id).first()
         if recipe_ingredient is None:

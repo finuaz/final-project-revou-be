@@ -33,6 +33,7 @@ class OriginModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_origin(cls, origin_id):
         origin = cls.query.filter_by(id=origin_id).first()
         if origin is None:

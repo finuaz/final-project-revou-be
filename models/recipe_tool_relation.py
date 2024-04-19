@@ -31,6 +31,7 @@ class RecipeToolRelationModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_recipe_tool(cls, recipe_tool_id):
         recipe_tool = cls.query.filter_by(id=recipe_tool_id).first()
         if recipe_tool is None:

@@ -36,6 +36,7 @@ class RateModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_rate(cls, rate_id):
         rate = cls.query.filter_by(id=rate_id).first()
         if rate is None:

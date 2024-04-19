@@ -31,6 +31,7 @@ class IngredientGroupRelationModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_ingredient_group(cls, ingredient_group_id):
         ingredient_group = cls.query.filter_by(id=ingredient_group_id).first()
         if ingredient_group is None:

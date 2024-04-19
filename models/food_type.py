@@ -31,6 +31,7 @@ class TypeModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_type(cls, type_id):
         type = cls.query.filter_by(id=type_id).first()
         if type is None:

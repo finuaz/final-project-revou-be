@@ -33,6 +33,7 @@ class AttachmentModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_attachment(cls, attachment_id):
         attachment = cls.query.filter_by(id=attachment_id).first()
         if attachment is None:

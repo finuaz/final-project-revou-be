@@ -34,6 +34,7 @@ class LikeModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_like(cls, like_id):
         like = cls.query.filter_by(id=like_id).first()
         if like is None:

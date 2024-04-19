@@ -77,6 +77,7 @@ class UserModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_user(cls, user_id):
         user = cls.query.filter_by(id=user_id).first()
         if user is None:

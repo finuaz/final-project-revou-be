@@ -42,6 +42,7 @@ class IngredientModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_ingredient(cls, ingredient_id):
         ingredient = cls.query.filter_by(id=ingredient_id).first()
         if ingredient is None:

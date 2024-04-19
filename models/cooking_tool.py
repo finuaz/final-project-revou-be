@@ -34,8 +34,8 @@ class ToolModel(db.Model):
             raise
 
     @classmethod
-    def get_tool(cls, tool_id):
-        tool = cls.query.get(tool_id)
+    def get_comment(cls, tool_id):
+        tool = cls.query.filter_by(id=tool_id).first()
         if tool is None:
             logging.error(f"Tool with id {tool_id} not found.")
             abort(404, f"Tool with id {tool_id} not found.")

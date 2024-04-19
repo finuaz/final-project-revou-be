@@ -75,6 +75,7 @@ class RecipeModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_recipe(cls, recipe_id):
         recipe = cls.query.filter_by(id=recipe_id).first()
         if recipe is None:

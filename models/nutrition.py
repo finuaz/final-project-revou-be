@@ -76,6 +76,7 @@ class NutritionModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_nutrition(cls, nutrition_id):
         nutrition = cls.query.filter_by(id=nutrition_id).first()
         if nutrition is None:

@@ -33,6 +33,7 @@ class GroupModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_group(cls, group_id):
         group = cls.query.filter_by(id=group_id).first()
         if group is None:

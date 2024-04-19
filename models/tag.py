@@ -31,6 +31,7 @@ class TagModel(db.Model):
         except Exception as e:
             print(e)
 
+    @classmethod
     def get_tag(cls, tag_id):
         tag = cls.query.filter_by(id=tag_id).first()
         if tag is None:
