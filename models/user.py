@@ -28,6 +28,7 @@ class UserModel(db.Model):
     role = db.Column(db.Enum(UserRole), nullable=False, default=UserRole.USER)
     bio = db.Column(db.String(300), nullable=True)
     location = db.Column(db.String(30), nullable=True)
+    view_count = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(
         db.DateTime, server_onupdate=db.func.now(), server_default=db.func.now()
@@ -51,6 +52,7 @@ class UserModel(db.Model):
         role,
         bio,
         location,
+        view_count,
     ):
         self.username = username
         self.email = email
@@ -61,6 +63,7 @@ class UserModel(db.Model):
         self.role = role
         self.bio = bio
         self.location = location
+        self.view_count = view_count
 
     def add_user(self):
         try:
