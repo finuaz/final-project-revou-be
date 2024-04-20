@@ -4,7 +4,8 @@ from marshmallow import Schema, fields
 class UserModelSchema(Schema):
     id = fields.Integer(dump_only=True)
     username = fields.String(required=True)
-    name = fields.String(required=True)
+    first_name = fields.String(required=True)
+    last_name = fields.String(required=True)
     email = fields.String(required=True)
     password = fields.String(required=True)
     reset_password_question = fields.String()
@@ -179,7 +180,7 @@ class SocialModelSchema(Schema):
     phone = fields.String()
     facebook = fields.String()
     instagram = fields.String()
-    twitter = fields.String()
+    tiktok = fields.String()
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
 

@@ -28,7 +28,8 @@ class UserRegister(MethodView):
             user = UserModel(
                 username=user_data["username"],
                 email=user_data["email"],
-                name=user_data["name"],
+                first_name=user_data["first_name"],
+                last_name=user_data["last_name"],
                 password=hashed_password,
                 reset_password_question=None,
                 reset_password_answer=None,

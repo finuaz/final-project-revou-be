@@ -12,7 +12,7 @@ class SocialModel(db.Model):
     phone = db.Column(db.String(255), nullable=True)
     facebook = db.Column(db.String(255), nullable=True)
     instagram = db.Column(db.String(255), nullable=True)
-    twitter = db.Column(db.String(255), nullable=True)
+    tiktok = db.Column(db.String(255), nullable=True)
     created_at = db.Column(
         db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
     )
@@ -25,12 +25,12 @@ class SocialModel(db.Model):
 
     users = db.relationship("UserModel", back_populates="socials")
 
-    def __init__(self, user_id, phone, facebook, instagram, twitter):
+    def __init__(self, user_id, phone, facebook, instagram, tiktok):
         self.user_id = user_id
         self.phone = phone
         self.facebook = facebook
         self.instagram = instagram
-        self.twitter = twitter
+        self.tiktok = tiktok
 
     def add_user_social(self):
         try:

@@ -18,7 +18,8 @@ class UserModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(25), nullable=False, unique=True)
-    name = db.Column(db.String(40), nullable=False)
+    first_name = db.Column(db.String(20), nullable=False)
+    last_name = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(60), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
     reset_password_question = db.Column(db.String(255), nullable=True)
@@ -56,7 +57,8 @@ class UserModel(db.Model):
     def __init__(
         self,
         username,
-        name,
+        first_name,
+        last_name,
         email,
         password,
         reset_password_question,
@@ -68,7 +70,8 @@ class UserModel(db.Model):
         view_count,
     ):
         self.username = username
-        self.name = name
+        self.first_name = first_name
+        self.last_name = last_name
         self.email = email
         self.password = password
         self.reset_password_question = reset_password_question
