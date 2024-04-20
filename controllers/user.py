@@ -9,7 +9,7 @@ from flask_jwt_extended import (
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask import request, jsonify
-from passlib.hash import pbkdf2_sha256
+from passlib.hash import pbkdf2_sha512
 
 from db import db
 from models import UserModel
@@ -24,16 +24,24 @@ class UserRegister(MethodView):
     @blprint.response(201, UserModelSchema)
     def post(self, user_data):
         try:
-            print("halo")
-            hashed_password = pbkdf2_sha256.hash(user_data["password"])
+            hashed_password = pbkdf2_sha512.hash(user_data["password"])
             user = UserModel(
                 username=user_data["username"],
-                password=hashed_password,
                 email=user_data["email"],
                 name=user_data["name"],
+                password=hashed_password,
+                reset_password_question=None,
+                reset_password_answer=None,
+                image=None,
+                role=None,
+                bio=None,
+                location=None,
+                view_count=None,
             )
-            db.session.add(user)
-            db.session.commit()
+            print(user)
+
+            user.add_user()
+
         except IntegrityError:
             abort(400, message="User with that email already exists")
         except SQLAlchemyError as e:
@@ -48,7 +56,7 @@ class UserLogin(MethodView):
     def post(self, user_data):
         user = UserModel.query.filter_by(email=user_data["email"]).first()
 
-        if user and pbkdf2_sha256.verify(user_data["password"], user.password):
+        if user and pbkdf2_sha512.verify(user_data["password"], user.password):
             access_token = create_access_token(identity=user.id)
 
 
