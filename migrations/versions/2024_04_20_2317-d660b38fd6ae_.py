@@ -1,8 +1,8 @@
-"""reinitialize
+"""empty message
 
-Revision ID: 5a138ef53671
+Revision ID: d660b38fd6ae
 Revises: 
-Create Date: 2024-04-19 22:38:18.529024
+Create Date: 2024-04-20 23:17:59.579834
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5a138ef53671'
+revision = 'd660b38fd6ae'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -79,7 +79,8 @@ def upgrade():
     op.create_table('User',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('username', sa.String(length=25), nullable=False),
-    sa.Column('name', sa.String(length=40), nullable=False),
+    sa.Column('first_name', sa.String(length=20), nullable=False),
+    sa.Column('last_name', sa.String(length=20), nullable=False),
     sa.Column('email', sa.String(length=60), nullable=False),
     sa.Column('password', sa.String(length=255), nullable=False),
     sa.Column('reset_password_question', sa.String(length=255), nullable=True),
@@ -135,7 +136,7 @@ def upgrade():
     sa.Column('phone', sa.String(length=255), nullable=True),
     sa.Column('facebook', sa.String(length=255), nullable=True),
     sa.Column('instagram', sa.String(length=255), nullable=True),
-    sa.Column('twitter', sa.String(length=255), nullable=True),
+    sa.Column('tiktok', sa.String(length=255), nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['User.id'], ),
