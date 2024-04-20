@@ -20,8 +20,16 @@ class FollowingModel(db.Model):
         onupdate=func.now(),
     )
 
-    follower_users = db.relationship("UserModel", back_populates="follower")
-    followed_users = db.relationship("UserModel", back_populates="followed")
+    follower_users = db.relationship(
+        "UserModel",
+        back_populates="follower",
+        foreign_keys="[FollowingModel.follower_id]",
+    )
+    followed_users = db.relationship(
+        "UserModel",
+        back_populates="followed",
+        foreign_keys="[FollowingModel.followed_id]",
+    )
 
     def __init__(self, follower_id, followed_id):
         self.follower_id = follower_id

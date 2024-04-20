@@ -42,12 +42,21 @@ class UserModel(db.Model):
     comments = db.relationship("CommentModel", back_populates="users")
     rates = db.relationship("RateModel", back_populates="users")
     socials = db.relationship("SocialModel", back_populates="users")
-    follower = db.relationship("FollowingModel", back_populates="follower_users")
-    followed = db.relationship("FollowingModel", back_populates="followed_users")
+    follower = db.relationship(
+        "FollowingModel",
+        back_populates="follower_users",
+        foreign_keys="[FollowingModel.follower_id]",
+    )
+    followed = db.relationship(
+        "FollowingModel",
+        back_populates="followed_users",
+        foreign_keys="[FollowingModel.followed_id]",
+    )
 
     def __init__(
         self,
         username,
+        name,
         email,
         password,
         reset_password_question,
@@ -59,6 +68,7 @@ class UserModel(db.Model):
         view_count,
     ):
         self.username = username
+        self.name = name
         self.email = email
         self.password = password
         self.reset_password_question = reset_password_question
