@@ -12,6 +12,9 @@ class UserRole(Enum):
     CHEF = "chef"
     EXPERT = "expert"
 
+    def serialize(self):
+        return self.value
+
 
 class UserModel(db.Model):
     __tablename__ = "User"
@@ -56,18 +59,18 @@ class UserModel(db.Model):
 
     def __init__(
         self,
-        username,
-        first_name,
-        last_name,
-        email,
-        password,
-        reset_password_question,
-        reset_password_answer,
-        image,
-        role,
-        bio,
-        location,
-        view_count,
+        username=None,
+        first_name=None,
+        last_name=None,
+        email=None,
+        password=None,
+        reset_password_question=None,
+        reset_password_answer=None,
+        image=None,
+        role=UserRole.USER,
+        bio=None,
+        location=None,
+        view_count=0,
     ):
         self.username = username
         self.first_name = first_name
@@ -77,7 +80,7 @@ class UserModel(db.Model):
         self.reset_password_question = reset_password_question
         self.reset_password_answer = reset_password_answer
         self.image = image
-        self.role = role
+        self.role = role.serialize() if role else None
         self.bio = bio
         self.location = location
         self.view_count = view_count

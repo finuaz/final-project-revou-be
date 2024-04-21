@@ -13,15 +13,16 @@ from passlib.hash import pbkdf2_sha512
 
 from db import db
 from models import UserModel
-from schemas import UserModelSchema
+from schemas import UserRegisterSchema, UserLoginSchema
 
-blprint = Blueprint("users", __name__, description="Operations on users")
+blp = Blueprint("users", __name__, description="Operations on users")
 
 
-@blprint.route("/register")
+@blp.route("/users/register")
 class UserRegister(MethodView):
-    @blprint.arguments(UserModelSchema)
-    @blprint.response(201, UserModelSchema)
+
+    @blp.arguments(UserRegisterSchema)
+    @blp.response(201, UserRegisterSchema)
     def post(self, user_data):
         try:
             hashed_password = pbkdf2_sha512.hash(user_data["password"])
@@ -30,14 +31,10 @@ class UserRegister(MethodView):
                 email=user_data["email"],
                 first_name=user_data["first_name"],
                 last_name=user_data["last_name"],
+                reset_password_question=user_data["reset_password_question"],
+                reset_password_answer=user_data["reset_password_answer"],
                 password=hashed_password,
-                reset_password_question=None,
-                reset_password_answer=None,
-                image=None,
                 role=None,
-                bio=None,
-                location=None,
-                view_count=None,
             )
             print(user)
 
@@ -50,15 +47,46 @@ class UserRegister(MethodView):
         return user
 
 
-@blprint.route("/login")
+@blp.route("/users/login")
 class UserLogin(MethodView):
-    @blprint.arguments(UserModelSchema)
-    @blprint.response(200, UserModelSchema)
+
+    @blp.arguments(UserLoginSchema)
     def post(self, user_data):
-        user = UserModel.query.filter_by(email=user_data["email"]).first()
+        user = UserModel.query.filter(
+            UserModel.username == user_data["username"]
+        ).first()
 
         if user and pbkdf2_sha512.verify(user_data["password"], user.password):
-            access_token = create_access_token(identity=user.id)
+
+            role = user.role.serialize() if user.role else None
+
+            access_token = create_access_token(
+                identity={
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "role": role,
+                },
+                fresh=True,
+            )
+            refresh_token = create_refresh_token(
+                identity={
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "role": role,
+                },
+            )
+            return {
+                "message": "you are successfully login",
+                "token": {
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                },
+            }, 200
+
+        else:
+            abort(401, "Invalid Credentials")
 
 
 def get_user_id():
