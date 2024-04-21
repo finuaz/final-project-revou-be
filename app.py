@@ -6,8 +6,22 @@ from db import db
 from psycopg2 import _psycopg
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
+import sentry_sdk
 
 from controllers.user import blprint as users_blueprint
+
+
+# Sentry
+sentry_sdk.init(
+    dsn="https://affc2afb70a92276512c6b814dbaba50@o4507121964744704.ingest.de.sentry.io/4507121968480336",
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    traces_sample_rate=1.0,
+    # Set profiles_sample_rate to 1.0 to profile 100%
+    # of sampled transactions.
+    # We recommend adjusting this value in production.
+    profiles_sample_rate=1.0,
+)
 
 
 def create_app(is_test=False):
