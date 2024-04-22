@@ -25,6 +25,7 @@ class UserModel(db.Model):
     last_name = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(60), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
+    new_password = db.Column(db.String(255), nullable=True)
     reset_password_question = db.Column(db.String(255), nullable=True)
     reset_password_answer = db.Column(db.String(255), nullable=True)
     image = db.Column(db.String(255), nullable=True)
@@ -64,6 +65,7 @@ class UserModel(db.Model):
         last_name=None,
         email=None,
         password=None,
+        new_password=None,
         reset_password_question=None,
         reset_password_answer=None,
         image=None,
@@ -77,6 +79,7 @@ class UserModel(db.Model):
         self.last_name = last_name
         self.email = email
         self.password = password
+        self.new_password = new_password
         self.reset_password_question = reset_password_question
         self.reset_password_answer = reset_password_answer
         self.image = image
@@ -104,6 +107,11 @@ class UserModel(db.Model):
     def update_user(self, user_data):
         for key, value in user_data.items():
             setattr(self, key, value)
+        db.session.commit()
+
+    def update_password(self, new_password):
+        self.password = new_password
+        self.new_password = None  # Clear the new password after updating
         db.session.commit()
 
     def delete_user(self):

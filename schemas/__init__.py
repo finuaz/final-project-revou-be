@@ -5,4 +5,5 @@ from .userschema import (
     UserUpdateInfoSchema,
     UserUpdateImageSchema,
     UserResetPasswordSchema,
+    UserDeletionSchema,
 )

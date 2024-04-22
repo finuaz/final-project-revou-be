@@ -39,26 +39,29 @@ class UserGetProfileSchema(Schema):
 
 class UserUpdateInfoSchema(Schema):
     id = fields.Integer(dump_only=True)
-    email = fields.String(required=True)
     bio = fields.String()
     location = fields.String()
-    updated_at = fields.DateTime()
+    updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
 
 
 class UserUpdateImageSchema(Schema):
     id = fields.Integer(dump_only=True)
-    email = fields.String(required=True)
     image = fields.String()
-    updated_at = fields.DateTime()
+    updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
 
 
 class UserResetPasswordSchema(Schema):
     id = fields.Integer(dump_only=True)
-    email = fields.String(required=True)
-    password = fields.String(required=True)
+    password = fields.String(required=True, load_only=True)
     reset_password_question = fields.String()
     reset_password_answer = fields.String()
-    updated_at = fields.DateTime()
+    new_password = fields.String(required=True, load_only=True)
+    updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+
+
+class UserDeletionSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    password = fields.String(required=True)
 
 
 ###
