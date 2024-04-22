@@ -80,7 +80,7 @@ class UserModel(db.Model):
         self.reset_password_question = reset_password_question
         self.reset_password_answer = reset_password_answer
         self.image = image
-        self.role = role.serialize() if role else None
+        self.role = role if role else UserRole.USER
         self.bio = bio
         self.location = location
         self.view_count = view_count

@@ -7,6 +7,7 @@ from psycopg2 import _psycopg
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 import sentry_sdk
+import logging
 
 # from json_encoder import CustomJSONEncoder
 
@@ -91,5 +92,11 @@ def create_app(is_test=False):
 
     api = Api(app)
     api.register_blueprint(users_blueprint)
+
+    # Logging configuration
+    logging.basicConfig(level=logging.ERROR)
+
+    # Logging example
+    app.logger.error("An unexpected error occurred")
 
     return app

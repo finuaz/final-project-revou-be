@@ -8,14 +8,38 @@ from flask_jwt_extended import (
 )
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 from passlib.hash import pbkdf2_sha512
+
+from marshmallow import ValidationError
+from werkzeug.exceptions import HTTPException, Forbidden
 
 from db import db
 from models import UserModel
-from schemas import UserRegisterSchema, UserLoginSchema
+from schemas import UserRegisterSchema, UserLoginSchema, UserGetProfileSchema
 
 blp = Blueprint("users", __name__, description="Operations on users")
+
+
+@blp.route("/users/profile")
+class UserProfile(MethodView):
+    @jwt_required()
+    @blp.response(200, schema=UserGetProfileSchema)
+    def get(self):
+        try:
+            current_user_id = get_jwt_identity()["id"]
+            user = UserModel.query.filter_by(id=current_user_id).first()
+            if not user:
+                abort(404, "User not found")
+
+            serialized_user = UserGetProfileSchema().dump(user)
+            return jsonify(serialized_user), 200
+        except SQLAlchemyError as e:
+            current_app.logger.error(f"Database error: {str(e)}")
+            abort(500, "Internal Server Error")
+        except Exception as e:
+            current_app.logger.error(f"An unexpected error occurred: {str(e)}")
+            abort(500, "Internal Server Error")
 
 
 @blp.route("/users/register")
