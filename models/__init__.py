@@ -1,4 +1,4 @@
-from .user import UserModel
+from .user import UserModel, UserRole
 from .user_social import SocialModel
 from .following import FollowingModel
 

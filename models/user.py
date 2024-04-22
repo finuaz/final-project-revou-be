@@ -12,6 +12,9 @@ class UserRole(Enum):
     CHEF = "chef"
     EXPERT = "expert"
 
+    def serialize(self):
+        return self.value
+
 
 class UserModel(db.Model):
     __tablename__ = "User"
@@ -22,6 +25,7 @@ class UserModel(db.Model):
     last_name = db.Column(db.String(20), nullable=False)
     email = db.Column(db.String(60), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
+    new_password = db.Column(db.String(255), nullable=True)
     reset_password_question = db.Column(db.String(255), nullable=True)
     reset_password_answer = db.Column(db.String(255), nullable=True)
     image = db.Column(db.String(255), nullable=True)
@@ -56,28 +60,30 @@ class UserModel(db.Model):
 
     def __init__(
         self,
-        username,
-        first_name,
-        last_name,
-        email,
-        password,
-        reset_password_question,
-        reset_password_answer,
-        image,
-        role,
-        bio,
-        location,
-        view_count,
+        username=None,
+        first_name=None,
+        last_name=None,
+        email=None,
+        password=None,
+        new_password=None,
+        reset_password_question=None,
+        reset_password_answer=None,
+        image=None,
+        role=UserRole.USER,
+        bio=None,
+        location=None,
+        view_count=0,
     ):
         self.username = username
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.password = password
+        self.new_password = new_password
         self.reset_password_question = reset_password_question
         self.reset_password_answer = reset_password_answer
         self.image = image
-        self.role = role
+        self.role = role if role else UserRole.USER
         self.bio = bio
         self.location = location
         self.view_count = view_count
@@ -101,6 +107,11 @@ class UserModel(db.Model):
     def update_user(self, user_data):
         for key, value in user_data.items():
             setattr(self, key, value)
+        db.session.commit()
+
+    def update_password(self, new_password):
+        self.password = new_password
+        self.new_password = None  # Clear the new password after updating
         db.session.commit()
 
     def delete_user(self):

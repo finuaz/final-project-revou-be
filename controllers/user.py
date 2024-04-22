@@ -8,20 +8,31 @@ from flask_jwt_extended import (
 )
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 from passlib.hash import pbkdf2_sha512
+
+from marshmallow import ValidationError
+from werkzeug.exceptions import HTTPException, Forbidden
 
 from db import db
 from models import UserModel
-from schemas import UserModelSchema
+from schemas import (
+    UserRegisterSchema,
+    UserLoginSchema,
+    UserGetProfileSchema,
+    UserUpdateInfoSchema,
+    UserUpdateImageSchema,
+    UserResetPasswordSchema,
+    UserDeletionSchema,
+)
 
-blprint = Blueprint("users", __name__, description="Operations on users")
+blp = Blueprint("users", __name__, description="Operations on users")
 
 
-@blprint.route("/register")
+@blp.route("/users/register")
 class UserRegister(MethodView):
-    @blprint.arguments(UserModelSchema)
-    @blprint.response(201, UserModelSchema)
+    @blp.arguments(UserRegisterSchema)
+    @blp.response(201, UserRegisterSchema)
     def post(self, user_data):
         try:
             hashed_password = pbkdf2_sha512.hash(user_data["password"])
@@ -30,14 +41,10 @@ class UserRegister(MethodView):
                 email=user_data["email"],
                 first_name=user_data["first_name"],
                 last_name=user_data["last_name"],
+                reset_password_question=user_data["reset_password_question"],
+                reset_password_answer=user_data["reset_password_answer"],
                 password=hashed_password,
-                reset_password_question=None,
-                reset_password_answer=None,
-                image=None,
                 role=None,
-                bio=None,
-                location=None,
-                view_count=None,
             )
             print(user)
 
@@ -50,15 +57,169 @@ class UserRegister(MethodView):
         return user
 
 
-@blprint.route("/login")
+@blp.route("/users/login")
 class UserLogin(MethodView):
-    @blprint.arguments(UserModelSchema)
-    @blprint.response(200, UserModelSchema)
+
+    @blp.arguments(UserLoginSchema)
     def post(self, user_data):
-        user = UserModel.query.filter_by(email=user_data["email"]).first()
+        user = UserModel.query.filter(
+            UserModel.username == user_data["username"]
+        ).first()
 
         if user and pbkdf2_sha512.verify(user_data["password"], user.password):
-            access_token = create_access_token(identity=user.id)
+
+            role = user.role.serialize() if user.role else None
+
+            access_token = create_access_token(
+                identity={
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "role": role,
+                },
+                fresh=True,
+            )
+            refresh_token = create_refresh_token(
+                identity={
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "role": role,
+                },
+            )
+            return {
+                "message": "you are successfully login",
+                "token": {
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                },
+            }, 200
+
+        else:
+            abort(401, "Invalid Credentials")
+
+
+@blp.route("/users/profile")
+class UserGetProfile(MethodView):
+    @jwt_required()
+    @blp.response(200, schema=UserGetProfileSchema)
+    def get(self):
+        try:
+            current_user_id = get_jwt_identity()["id"]
+            user = UserModel.query.filter_by(id=current_user_id).first()
+            if not user:
+                abort(404, "User not found")
+
+            serialized_user = UserGetProfileSchema().dump(user)
+            return jsonify(serialized_user), 200
+        except SQLAlchemyError as e:
+            current_app.logger.error(f"Database error: {str(e)}")
+            abort(500, "Internal Server Error")
+        except Exception as e:
+            current_app.logger.error(f"An unexpected error occurred: {str(e)}")
+            abort(500, "Internal Server Error")
+
+
+@blp.route("/users/update-info")
+class UserUpdateInfo(MethodView):
+    @jwt_required()
+    @blp.arguments(UserUpdateInfoSchema)
+    @blp.response(201, UserUpdateInfoSchema)
+    def put(self, user_data):
+
+        try:
+            user_id = get_jwt_identity()["id"]
+
+            user = UserModel.query.filter_by(id=user_id).first()
+
+            user.update_user(user_data)
+
+            return UserUpdateInfoSchema().dump(user), 200
+
+        except Forbidden as e:
+            abort(403, description=str(e))
+
+        except Exception as e:
+            abort(500, description=f"Failed to update user information: {str(e)}")
+
+
+@blp.route("/users/update-image")
+class UserUpdateImage(MethodView):
+
+    @jwt_required()
+    @blp.arguments(UserUpdateImageSchema)
+    @blp.response(201, UserUpdateImageSchema)
+    def put(self, user_data):
+        try:
+            user_id = get_jwt_identity()["id"]
+
+            user = UserModel.query.filter_by(id=user_id).first()
+
+            user.update_user(user_data)
+
+            return UserUpdateImageSchema().dump(user), 200
+
+        except Forbidden as e:
+            abort(403, description=str(e))
+
+        except Exception as e:
+            abort(500, description=f"Failed to update user information: {str(e)}")
+
+
+@blp.route("/users/reset-password")
+class UserResetPassword(MethodView):
+
+    @jwt_required()
+    @blp.arguments(UserResetPasswordSchema)
+    @blp.response(200, UserResetPasswordSchema)
+    def put(self, user_data):
+        user_id = get_jwt_identity()["id"]
+
+        user = UserModel.query.filter_by(id=user_id).first()
+
+        # Verify current password before proceeding with the reset
+        if user and pbkdf2_sha512.verify(user_data["password"], user.password):
+            if user.reset_password_answer == user_data["reset_password_answer"]:
+                try:
+                    # Update user's password with the new password
+                    user.update_password(pbkdf2_sha512.hash(user_data["new_password"]))
+
+                    return UserResetPasswordSchema().dump(user), 200
+
+                except Forbidden as fe:
+                    abort(403, description=str(fe))
+
+                except Exception as e:
+                    abort(500, description=f"Failed to reset user's password: {str(e)}")
+            else:
+                abort(400, description="Incorrect reset password answer")
+        else:
+            abort(400, description="Incorrect current password")
+
+
+@blp.route("/users/delete")
+class UserDelete(MethodView):
+
+    @jwt_required()
+    @blp.arguments(UserDeletionSchema)
+    @blp.response(204, "your user has been deleted")
+    def delete(self, user_data):
+
+        user_id = get_jwt_identity()["id"]
+
+        user = UserModel.query.filter_by(id=user_id).first()
+
+        if user and pbkdf2_sha512.verify(user_data["password"], user.password):
+            try:
+
+                user.delete_user()
+                return jsonify("your user has been deleted"), 204
+
+            except Forbidden as fe:
+                abort(403, description=str(fe))
+
+            except Exception as e:
+                abort(500, description=f"Failed to delete user: {str(e)}")
 
 
 def get_user_id():

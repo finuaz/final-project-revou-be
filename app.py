@@ -7,8 +7,11 @@ from psycopg2 import _psycopg
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 import sentry_sdk
+import logging
 
-from controllers.user import blprint as users_blueprint
+# from json_encoder import CustomJSONEncoder
+
+from controllers.user import blp as users_blueprint
 
 
 # Sentry
@@ -27,6 +30,9 @@ sentry_sdk.init(
 def create_app(is_test=False):
     app = Flask(__name__)
     load_dotenv()
+
+    # app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
+    # app.json_encoder = CustomJSONEncoder
 
     app.config.update(
         API_TITLE="HealtHub",
@@ -86,5 +92,11 @@ def create_app(is_test=False):
 
     api = Api(app)
     api.register_blueprint(users_blueprint)
+
+    # Logging configuration
+    logging.basicConfig(level=logging.ERROR)
+
+    # Logging example
+    app.logger.error("An unexpected error occurred")
 
     return app
