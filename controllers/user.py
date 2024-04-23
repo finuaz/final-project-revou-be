@@ -8,13 +8,12 @@ from flask_jwt_extended import (
 )
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from flask import request, jsonify, current_app
+from flask import jsonify, current_app
 from passlib.hash import pbkdf2_sha512
 
 from marshmallow import ValidationError
 from werkzeug.exceptions import HTTPException, Forbidden
 
-from db import db
 from models import UserModel
 from schemas import (
     UserRegisterSchema,
@@ -99,14 +98,60 @@ class UserLogin(MethodView):
             abort(401, "Invalid Credentials")
 
 
-@blp.route("/users/profile")
-class UserGetProfile(MethodView):
+@blp.route("/users/profile/own")
+class UserGetOwnProfile(MethodView):
     @jwt_required()
     @blp.response(200, schema=UserGetProfileSchema)
     def get(self):
         try:
             current_user_id = get_jwt_identity()["id"]
             user = UserModel.query.filter_by(id=current_user_id).first()
+            if not user:
+                abort(404, "User not found")
+
+            serialized_user = UserGetProfileSchema().dump(user)
+            return jsonify(serialized_user), 200
+        except SQLAlchemyError as e:
+            current_app.logger.error(f"Database error: {str(e)}")
+            abort(500, "Internal Server Error")
+        except Exception as e:
+            current_app.logger.error(f"An unexpected error occurred: {str(e)}")
+            abort(500, "Internal Server Error")
+
+
+@blp.route("/users/<string:username_in_search>")
+class GetProfileByUsername(MethodView):
+
+    @blp.response(200, schema=UserGetProfileSchema)
+    def get(self, username_in_search):
+        try:
+
+            user = UserModel.query.filter_by(username=username_in_search).first()
+            print(user)
+
+            if not user:
+                abort(404, "User not found")
+
+            serialized_user = UserGetProfileSchema().dump(user)
+            return jsonify(serialized_user), 200
+        except SQLAlchemyError as e:
+            current_app.logger.error(f"Database error: {str(e)}")
+            abort(500, "Internal Server Error")
+        except Exception as e:
+            current_app.logger.error(f"An unexpected error occurred: {str(e)}")
+            abort(500, "Internal Server Error")
+
+
+@blp.route("/users/<int:user_id_in_search>")
+class GetProfileById(MethodView):
+
+    @blp.response(200, schema=UserGetProfileSchema)
+    def get(self, user_id_in_search):
+        try:
+
+            user = UserModel.query.filter_by(id=user_id_in_search).first()
+            print(user)
+
             if not user:
                 abort(404, "User not found")
 
