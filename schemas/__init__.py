@@ -7,3 +7,5 @@ from .userschema import (
     UserResetPasswordSchema,
     UserDeletionSchema,
 )
+
+from .recipeschema import RecipeSchema

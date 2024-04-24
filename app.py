@@ -13,6 +13,8 @@ import logging
 
 from controllers.user import blp as users_blueprint
 
+from controllers.recipe import blp as recipes_blueprint
+
 
 # Sentry
 sentry_sdk.init(
@@ -92,6 +94,7 @@ def create_app(is_test=False):
 
     api = Api(app)
     api.register_blueprint(users_blueprint)
+    api.register_blueprint(recipes_blueprint)
 
     # Logging configuration
     logging.basicConfig(level=logging.ERROR)
