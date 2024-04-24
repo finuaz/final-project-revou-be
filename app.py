@@ -10,21 +10,16 @@ import sentry_sdk
 import logging
 
 # from json_encoder import CustomJSONEncoder
-
-from controllers.user import blp as users_blueprint
-
-from controllers.recipe import blp as recipes_blueprint
+from controllers import users_blueprint, recipes_blueprint, user_socials_blueprint
 
 
 # Sentry
 sentry_sdk.init(
     dsn="https://affc2afb70a92276512c6b814dbaba50@o4507121964744704.ingest.de.sentry.io/4507121968480336",
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
+    # Set traces_sample_rate to 1.0 to capture 100% of transactions for performance monitoring.
     traces_sample_rate=1.0,
     # Set profiles_sample_rate to 1.0 to profile 100%
     # of sampled transactions.
-    # We recommend adjusting this value in production.
     profiles_sample_rate=1.0,
 )
 
@@ -95,6 +90,7 @@ def create_app(is_test=False):
     api = Api(app)
     api.register_blueprint(users_blueprint)
     api.register_blueprint(recipes_blueprint)
+    api.register_blueprint(user_socials_blueprint)
 
     # Logging configuration
     logging.basicConfig(level=logging.ERROR)

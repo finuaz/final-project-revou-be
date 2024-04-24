@@ -34,12 +34,14 @@ class UserGetProfileSchema(Schema):
     image = fields.String()
     role = EnumField(UserRole, by_value=True)
     bio = fields.String()
+    phone = fields.String()
     location = fields.String()
 
 
 class UserUpdateInfoSchema(Schema):
     id = fields.Integer(dump_only=True)
     bio = fields.String()
+    phone = fields.String()
     location = fields.String()
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
 

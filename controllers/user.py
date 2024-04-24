@@ -11,8 +11,8 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask import jsonify, current_app
 from passlib.hash import pbkdf2_sha512
 
-from marshmallow import ValidationError
-from werkzeug.exceptions import HTTPException, Forbidden
+
+from werkzeug.exceptions import Forbidden
 
 from models import UserModel
 from schemas import (

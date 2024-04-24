@@ -9,3 +9,10 @@ from .userschema import (
 )
 
 from .recipeschema import RecipeSchema
+
+from .socialschema import (
+    UserSocialsSchema,
+    UserFacebookSchema,
+    UserInstagramSchema,
+    UserTiktokSchema,
+)
