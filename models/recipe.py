@@ -56,7 +56,7 @@ class RecipeModel(db.Model):
         servings,
         budget,
         instructions,
-        view_count,
+        view_count=0,
     ):
         self.author_id = author_id
         self.title = title

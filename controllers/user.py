@@ -45,7 +45,6 @@ class UserRegister(MethodView):
                 password=hashed_password,
                 role=None,
             )
-            print(user)
 
             user.add_user()
 
@@ -98,7 +97,7 @@ class UserLogin(MethodView):
             abort(401, "Invalid Credentials")
 
 
-@blp.route("/users/profile/own")
+@blp.route("/users/profile")
 class UserGetOwnProfile(MethodView):
     @jwt_required()
     @blp.response(200, schema=UserGetProfileSchema)
@@ -127,7 +126,6 @@ class GetProfileByUsername(MethodView):
         try:
 
             user = UserModel.query.filter_by(username=username_in_search).first()
-            print(user)
 
             if not user:
                 abort(404, "User not found")
@@ -150,7 +148,6 @@ class GetProfileById(MethodView):
         try:
 
             user = UserModel.query.filter_by(id=user_id_in_search).first()
-            print(user)
 
             if not user:
                 abort(404, "User not found")

@@ -11,5 +11,14 @@ class RecipeSchema(Schema):
     servings = fields.Integer()
     budget = fields.Decimal()
     instructions = fields.String()
-    created_at = fields.DateTime()
-    updated_at = fields.DateTime()
+    view_count = fields.Integer()
+    created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+    updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+
+
+class RecipeImagesSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    recipe_id = fields.Integer()
+    attachment_link = fields.String()
+    created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+    updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
