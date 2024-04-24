@@ -9,7 +9,6 @@ class SocialModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
-    phone = db.Column(db.String(255), nullable=True)
     facebook = db.Column(db.String(255), nullable=True)
     instagram = db.Column(db.String(255), nullable=True)
     tiktok = db.Column(db.String(255), nullable=True)
@@ -25,9 +24,8 @@ class SocialModel(db.Model):
 
     users = db.relationship("UserModel", back_populates="socials")
 
-    def __init__(self, user_id, phone, facebook, instagram, tiktok):
+    def __init__(self, user_id, facebook=None, instagram=None, tiktok=None):
         self.user_id = user_id
-        self.phone = phone
         self.facebook = facebook
         self.instagram = instagram
         self.tiktok = tiktok

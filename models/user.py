@@ -31,6 +31,7 @@ class UserModel(db.Model):
     image = db.Column(db.String(255), nullable=True)
     role = db.Column(db.Enum(UserRole), nullable=False, default=UserRole.USER)
     bio = db.Column(db.String(300), nullable=True)
+    phone = db.Column(db.String(15), nullable=True)
     location = db.Column(db.String(30), nullable=True)
     view_count = db.Column(db.Integer, default=0)
     created_at = db.Column(
@@ -71,6 +72,7 @@ class UserModel(db.Model):
         image=None,
         role=UserRole.USER,
         bio=None,
+        phone=None,
         location=None,
         view_count=0,
     ):
@@ -85,6 +87,7 @@ class UserModel(db.Model):
         self.image = image
         self.role = role if role else UserRole.USER
         self.bio = bio
+        self.phone = phone
         self.location = location
         self.view_count = view_count
 
