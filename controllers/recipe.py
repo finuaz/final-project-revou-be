@@ -135,7 +135,7 @@ class RecipeDelete(MethodView):
         try:
             recipe.delete_recipe()
 
-            return jsonify({}), 204
+            return jsonify({"message": "Recipe deleted successfully"}), 200
 
         except Forbidden as e:
             abort(403, description=str(e))

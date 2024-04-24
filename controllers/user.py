@@ -255,7 +255,7 @@ class UserDelete(MethodView):
             try:
 
                 user.delete_user()
-                return jsonify("your user has been deleted"), 204
+                return jsonify({"message": "your user has been deleted"}), 200
 
             except Forbidden as fe:
                 abort(403, description=str(fe))
