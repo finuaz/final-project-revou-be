@@ -60,11 +60,18 @@ class UserLogin(MethodView):
 
     @blp.arguments(UserLoginSchema)
     def post(self, user_data):
-        user = UserModel.query.filter(
-            UserModel.username == user_data["username"]
-        ).first()
+        username_or_email = user_data.get("username_or_email")
+        password = user_data.get("password")
 
-        if user and pbkdf2_sha512.verify(user_data["password"], user.password):
+        if username_or_email is None:
+            abort(400, "Username or email is required")
+
+        if UserModel.is_valid_email(username_or_email):
+            user = UserModel.query.filter_by(email=username_or_email).first()
+        else:
+            user = UserModel.query.filter_by(username=username_or_email).first()
+
+        if user and pbkdf2_sha512.verify(password, user.password):
 
             role = user.role.serialize() if user.role else None
 

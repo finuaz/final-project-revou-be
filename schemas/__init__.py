@@ -8,7 +8,7 @@ from .userschema import (
     UserDeletionSchema,
 )
 
-from .recipeschema import RecipeSchema
+from .recipeschema import RecipeSchema, RecipeImageSchema, RecipeInstructionSchema
 
 from .socialschema import (
     UserSocialsSchema,

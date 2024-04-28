@@ -16,9 +16,17 @@ class RecipeSchema(Schema):
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
 
 
-class RecipeImagesSchema(Schema):
+class RecipeImageSchema(Schema):
     id = fields.Integer(dump_only=True)
     recipe_id = fields.Integer()
     attachment_link = fields.String()
+    created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+    updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+
+
+class RecipeInstructionSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    order = fields.Integer()
+    instruction = fields.String()
     created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
