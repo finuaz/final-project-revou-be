@@ -35,6 +35,7 @@ class UserGetProfileSchema(Schema):
     role = EnumField(UserRole, by_value=True)
     bio = fields.String()
     phone = fields.String()
+    phone = fields.String()
     location = fields.String()
 
 

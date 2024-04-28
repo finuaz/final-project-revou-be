@@ -9,6 +9,7 @@ class InstructionModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     author_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey("Recipe.id"), nullable=False)
     order = db.Column(db.Integer, nullable=False, unique=True)
     instruction = db.Column(db.String(120), nullable=False)
     created_at = db.Column(
@@ -21,12 +22,11 @@ class InstructionModel(db.Model):
         onupdate=func.now(),
     )
 
-    recipe_instructions = db.relationship(
-        "RecipeInstructionRelationModel", back_populates="instructions"
-    )
+    recipes = db.relationship("RecipeModel", back_populates="instructions")
 
-    def __init__(self, author_id, order, instruction):
+    def __init__(self, author_id, recipe_id, order, instruction):
         self.author_id = author_id
+        self.recipe_id = recipe_id
         self.order = order
         self.instruction = instruction
 
