@@ -1,4 +1,5 @@
 from marshmallow import Schema, fields
+from collections import OrderedDict
 
 
 class RecipeSchema(Schema):
@@ -7,14 +8,16 @@ class RecipeSchema(Schema):
     title = fields.String()
     description = fields.String()
     nutriscore = fields.Integer()
-    cooktime = fields.String()
+    cooktime = fields.Integer()
     complexity = fields.String()
     servings = fields.Integer()
-    budget = fields.Decimal()
-    instructions = fields.String()
+    budget = fields.String()
     view_count = fields.Integer()
     created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+
+    class Meta:
+        ordered = True
 
 
 class RecipeImageSchema(Schema):

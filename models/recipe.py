@@ -12,10 +12,10 @@ class RecipeModel(db.Model):
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(300), nullable=False)
     nutriscore = db.Column(db.Integer, nullable=True)
-    cooktime = db.Column(db.String(20), nullable=False)
+    cooktime = db.Column(db.Integer, nullable=False)
     complexity = db.Column(db.String(20), nullable=False)
     servings = db.Column(db.Integer, nullable=False)
-    budget = db.Column(db.DECIMAL(10, 2), nullable=False)
+    budget = db.Column(db.String(20), nullable=False)
     view_count = db.Column(db.Integer, default=0)
     created_at = db.Column(
         db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
@@ -27,6 +27,9 @@ class RecipeModel(db.Model):
         onupdate=func.now(),
     )
 
+    instructions = db.relationship(
+        "InstructionModel", back_populates="recipes", cascade="all, delete-orphan"
+    )
     likes = db.relationship("LikeModel", back_populates="recipes")
     comments = db.relationship("CommentModel", back_populates="recipes")
     rates = db.relationship("RateModel", back_populates="recipes")
@@ -38,9 +41,6 @@ class RecipeModel(db.Model):
     )
     recipe_ingredients = db.relationship(
         "RecipeIngredientRelationModel", back_populates="recipes"
-    )
-    recipe_instructions = db.relationship(
-        "RecipeInstructionRelationModel", back_populates="recipes"
     )
     recipe_origins = db.relationship(
         "RecipeOriginRelationModel", back_populates="recipes"

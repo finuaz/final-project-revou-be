@@ -22,7 +22,8 @@ from .nutrition import NutritionModel
 
 from .recipe_category_relation import RecipeCategoryRelationModel
 from .recipe_ingredient_relation import RecipeIngredientRelationModel
-from .recipe_instruction_relation import RecipeInstructionRelationModel
+
+# from .recipe_instruction_relation import RecipeInstructionRelationModel
 from .recipe_origin_relation import RecipeOriginRelationModel
 from .recipe_tag_relation import RecipeTagRelationModel
 

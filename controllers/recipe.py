@@ -34,7 +34,6 @@ class RecipeRegister(MethodView):
                 complexity=recipe_data["complexity"],
                 servings=recipe_data["servings"],
                 budget=recipe_data["budget"],
-                instructions=recipe_data["instructions"],
             )
 
             recipe.add_recipe()
@@ -55,8 +54,8 @@ class RecipeDetailsById(MethodView):
             if not recipe:
                 abort(404, "Recipe not found")
 
-            serialized_user = RecipeSchema().dump(recipe)
-            return jsonify(serialized_user), 200
+            serialized_recipe = RecipeSchema().dump(recipe)
+            return jsonify(serialized_recipe), 200
         except SQLAlchemyError as e:
             current_app.logger.error(f"Database error: {str(e)}")
             abort(500, "Internal Server Error")
@@ -76,8 +75,8 @@ class RecipeDetailsByTitle(MethodView):
             if not recipe:
                 abort(404, "Recipe not found")
 
-            serialized_user = RecipeSchema().dump(recipe)
-            return jsonify(serialized_user), 200
+            serialized_recipe = RecipeSchema().dump(recipe)
+            return jsonify(serialized_recipe), 200
         except SQLAlchemyError as e:
             current_app.logger.error(f"Database error: {str(e)}")
             abort(500, "Internal Server Error")
