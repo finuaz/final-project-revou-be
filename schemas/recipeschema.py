@@ -6,6 +6,7 @@ class RecipeSchema(Schema):
     author_id = fields.Integer()
     title = fields.String()
     description = fields.String()
+    nutriscore = fields.Integer()
     cooktime = fields.String()
     complexity = fields.String()
     servings = fields.Integer()

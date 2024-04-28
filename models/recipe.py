@@ -11,11 +11,11 @@ class RecipeModel(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
     title = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(300), nullable=False)
+    nutriscore = db.Column(db.Integer, nullable=True)
     cooktime = db.Column(db.String(20), nullable=False)
     complexity = db.Column(db.String(20), nullable=False)
     servings = db.Column(db.Integer, nullable=False)
     budget = db.Column(db.DECIMAL(10, 2), nullable=False)
-    # instructions = db.Column(db.Text, nullable=False)
     view_count = db.Column(db.Integer, default=0)
     created_at = db.Column(
         db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
@@ -53,6 +53,7 @@ class RecipeModel(db.Model):
         author_id,
         title,
         description,
+        nutriscore,
         cooktime,
         complexity,
         servings,
@@ -62,6 +63,7 @@ class RecipeModel(db.Model):
         self.author_id = author_id
         self.title = title
         self.description = description
+        self.nutriscore = nutriscore
         self.cooktime = cooktime
         self.complexity = complexity
         self.servings = servings

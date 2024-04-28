@@ -29,6 +29,7 @@ class RecipeRegister(MethodView):
                 author_id=current_user_id,
                 title=recipe_data["title"],
                 description=recipe_data["description"],
+                nutriscore=recipe_data["nutriscore"],
                 cooktime=recipe_data["cooktime"],
                 complexity=recipe_data["complexity"],
                 servings=recipe_data["servings"],
