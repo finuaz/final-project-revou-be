@@ -18,7 +18,7 @@ class UserRegisterSchema(Schema):
 
 class UserLoginSchema(Schema):
     id = fields.Integer(dump_only=True)
-    username = fields.String(required=True)
+    username_or_email = fields.String(required=True)
     first_name = fields.String(required=False)
     last_name = fields.String(required=False)
     email = fields.String(required=False)

@@ -15,7 +15,7 @@ class RecipeModel(db.Model):
     complexity = db.Column(db.String(20), nullable=False)
     servings = db.Column(db.Integer, nullable=False)
     budget = db.Column(db.DECIMAL(10, 2), nullable=False)
-    instructions = db.Column(db.Text, nullable=False)
+    # instructions = db.Column(db.Text, nullable=False)
     view_count = db.Column(db.Integer, default=0)
     created_at = db.Column(
         db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
@@ -39,11 +39,13 @@ class RecipeModel(db.Model):
     recipe_ingredients = db.relationship(
         "RecipeIngredientRelationModel", back_populates="recipes"
     )
+    recipe_instructions = db.relationship(
+        "RecipeInstructionRelationModel", back_populates="recipes"
+    )
     recipe_origins = db.relationship(
         "RecipeOriginRelationModel", back_populates="recipes"
     )
     recipe_tags = db.relationship("RecipeTagRelationModel", back_populates="recipes")
-    recipe_tools = db.relationship("RecipeToolRelationModel", back_populates="recipes")
     recipe_types = db.relationship("RecipeTypeRelationModel", back_populates="recipes")
 
     def __init__(
@@ -55,7 +57,6 @@ class RecipeModel(db.Model):
         complexity,
         servings,
         budget,
-        instructions,
         view_count=0,
     ):
         self.author_id = author_id
@@ -65,7 +66,6 @@ class RecipeModel(db.Model):
         self.complexity = complexity
         self.servings = servings
         self.budget = budget
-        self.instructions = instructions
         self.view_count = view_count
 
     def add_recipe(self):

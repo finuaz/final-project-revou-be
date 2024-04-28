@@ -10,7 +10,12 @@ import sentry_sdk
 import logging
 
 # from json_encoder import CustomJSONEncoder
-from controllers import users_blueprint, recipes_blueprint, user_socials_blueprint
+from controllers import (
+    users_blueprint,
+    recipes_blueprint,
+    user_socials_blueprint,
+    instructions_blueprint,
+)
 
 
 # Sentry
@@ -91,6 +96,7 @@ def create_app(is_test=False):
     api.register_blueprint(users_blueprint)
     api.register_blueprint(recipes_blueprint)
     api.register_blueprint(user_socials_blueprint)
+    api.register_blueprint(instructions_blueprint)
 
     # Logging configuration
     logging.basicConfig(level=logging.ERROR)
