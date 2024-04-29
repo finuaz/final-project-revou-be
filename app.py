@@ -8,6 +8,8 @@ from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 import sentry_sdk
 import logging
+from flask_cors import CORS
+
 
 # from json_encoder import CustomJSONEncoder
 from controllers import (
@@ -58,10 +60,7 @@ def create_app(is_test=False):
 
     db.init_app(app)
 
-    # class SupaUser(db.Model):
-    #     id = db.Column(db.Integer, primary_key=True)
-    #     username = db.Column(db.String(80), unique=True, nullable=False)
-    #     email = db.Column(db.String)
+    CORS(app)
 
     # with app.app_context():
     #     db.create_all()
