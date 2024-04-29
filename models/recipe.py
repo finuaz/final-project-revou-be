@@ -16,6 +16,7 @@ class RecipeModel(db.Model):
     complexity = db.Column(db.String(20), nullable=False)
     servings = db.Column(db.Integer, nullable=False)
     budget = db.Column(db.String(20), nullable=False)
+    instruction = db.Column(db.Text, nullable=False)
     view_count = db.Column(db.Integer, default=0)
     created_at = db.Column(
         db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
@@ -27,9 +28,6 @@ class RecipeModel(db.Model):
         onupdate=func.now(),
     )
 
-    instructions = db.relationship(
-        "InstructionModel", back_populates="recipes", cascade="all, delete-orphan"
-    )
     likes = db.relationship("LikeModel", back_populates="recipes")
     comments = db.relationship("CommentModel", back_populates="recipes")
     rates = db.relationship("RateModel", back_populates="recipes")
@@ -58,6 +56,7 @@ class RecipeModel(db.Model):
         complexity,
         servings,
         budget,
+        instruction,
         view_count=0,
     ):
         self.author_id = author_id
@@ -68,6 +67,7 @@ class RecipeModel(db.Model):
         self.complexity = complexity
         self.servings = servings
         self.budget = budget
+        self.instruction = instruction
         self.view_count = view_count
 
     def add_recipe(self):
