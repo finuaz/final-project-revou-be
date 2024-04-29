@@ -124,6 +124,17 @@ files = [
 ]
 
 [[package]]
+name = "cachelib"
+version = "0.9.0"
+description = "A collection of cache libraries in the same API interface."
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "cachelib-0.9.0-py3-none-any.whl", hash = "sha256:811ceeb1209d2fe51cd2b62810bd1eccf70feba5c52641532498be5c675493b3"},
+    {file = "cachelib-0.9.0.tar.gz", hash = "sha256:38222cc7c1b79a23606de5c2607f4925779e37cdcea1c2ad21b8bae94b5425a5"},
+]
+
+[[package]]
 name = "cachetools"
 version = "5.3.3"
 description = "Extensible memoizing collections and decorators"
@@ -325,6 +336,21 @@ Werkzeug = ">=3.0.0"
 [package.extras]
 async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
+
+[[package]]
+name = "flask-caching"
+version = "2.2.0"
+description = "Adds caching support to Flask applications."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "Flask_Caching-2.2.0-py3-none-any.whl", hash = "sha256:5b74ad9e263cc3c5ac9c2d33c094eb99294b111ace78ccaa665d6b852b907e14"},
+    {file = "flask_caching-2.2.0.tar.gz", hash = "sha256:9d2d30ee02250c47c3650fd6781b79e92d5964d91382a3697e5ebaf77ca0ea4f"},
+]
+
+[package.dependencies]
+cachelib = ">=0.9.0,<0.10.0"
+Flask = "*"
 
 [[package]]
 name = "flask-cors"
@@ -1104,6 +1130,21 @@ typing-extensions = ">=4.11.0,<5.0.0"
 websockets = ">=11,<13"
 
 [[package]]
+name = "redis"
+version = "5.0.4"
+description = "Python client for Redis database and key-value store"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "redis-5.0.4-py3-none-any.whl", hash = "sha256:7adc2835c7a9b5033b7ad8f8918d09b7344188228809c98df07af226d39dec91"},
+    {file = "redis-5.0.4.tar.gz", hash = "sha256:ec31f2ed9675cc54c21ba854cfe0462e6faf1d83c8ce5944709db8a4700b9c61"},
+]
+
+[package.extras]
+hiredis = ["hiredis (>=1.0.0)"]
+ocsp = ["cryptography (>=36.0.1)", "pyopenssl (==20.0.1)", "requests (>=2.26.0)"]
+
+[[package]]
 name = "requests"
 version = "2.31.0"
 description = "Python HTTP for Humans."
@@ -1527,4 +1568,4 @@ requests = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "d0963249f0970eeb3337abe652fdaf457d2fa526f739c6a3724dfa114a18a3c5"
+content-hash = "d3a6be897d294dae0a404368bce3b66fc372e15cf4ec7b593ffd3306ecf2b5c9"

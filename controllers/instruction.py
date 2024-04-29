@@ -7,12 +7,12 @@ from flask_smorest import Blueprint, abort
 from sqlalchemy import asc
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask import jsonify, current_app
-from db import db
+from extensions import cache
 
 from werkzeug.exceptions import Forbidden
 
 from models import RecipeModel, InstructionModel
-from schemas import RecipeSchema, RecipeInstructionSchema
+from schemas import RecipeInstructionSchema
 
 blp = Blueprint(
     "instructions", __name__, description="Operations on recipe instructions"
@@ -56,6 +56,7 @@ class AddInstruction(MethodView):
 class GetAllInstruction(MethodView):
 
     @blp.response(200, RecipeInstructionSchema(many=True))
+    @cache.cached(timeout=60)
     def get(self, related_recipe_id):
 
         try:

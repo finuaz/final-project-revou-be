@@ -10,6 +10,7 @@ from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask import jsonify, current_app
 from passlib.hash import pbkdf2_sha512
+from extensions import cache
 
 
 from werkzeug.exceptions import Forbidden
@@ -106,9 +107,12 @@ class UserLogin(MethodView):
 
 @blp.route("/users/profile")
 class UserGetOwnProfile(MethodView):
+
     @jwt_required()
     @blp.response(200, schema=UserGetProfileSchema)
+    @cache.cached(timeout=60)
     def get(self):
+
         try:
             current_user_id = get_jwt_identity()["id"]
             user = UserModel.query.filter_by(id=current_user_id).first()
@@ -129,6 +133,7 @@ class UserGetOwnProfile(MethodView):
 class GetProfileByUsername(MethodView):
 
     @blp.response(200, schema=UserGetProfileSchema)
+    @cache.cached(timeout=60 * 60 * 24)
     def get(self, username_in_search):
         try:
 
@@ -151,6 +156,7 @@ class GetProfileByUsername(MethodView):
 class GetProfileById(MethodView):
 
     @blp.response(200, schema=UserGetProfileSchema)
+    @cache.cached(timeout=60 * 60 * 24)
     def get(self, user_id_in_search):
         try:
 

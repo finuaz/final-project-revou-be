@@ -9,10 +9,8 @@ from flask_jwt_extended import (
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask import jsonify, current_app
-from passlib.hash import pbkdf2_sha512
-
-from marshmallow import ValidationError
-from werkzeug.exceptions import HTTPException, Forbidden
+from extensions import cache
+from werkzeug.exceptions import Forbidden
 
 from models import SocialModel, UserModel
 from schemas import (
@@ -68,7 +66,9 @@ class BatchConnect(MethodView):
 
 @blp.route("/users/profile/socials")
 class SocialList(MethodView):
+
     @blp.response(201, UserSocialsSchema)
+    @cache.cached(timeout=60)
     @jwt_required()
     def get(self):
         try:
@@ -89,7 +89,9 @@ class SocialList(MethodView):
 
 @blp.route("/users/<int:user_id_in_search>/socials")
 class SocialDisplay(MethodView):
+
     @blp.response(201, UserSocialsSchema)
+    @cache.cached(timeout=60 * 60 * 24)
     def get(self, user_id_in_search):
 
         try:

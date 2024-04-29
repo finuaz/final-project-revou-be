@@ -9,6 +9,7 @@ from flask_migrate import Migrate
 import sentry_sdk
 import logging
 from flask_cors import CORS
+from extensions import cache
 
 
 # from json_encoder import CustomJSONEncoder
@@ -35,9 +36,10 @@ def create_app(is_test=False):
     app = Flask(__name__)
     load_dotenv()
 
-    # app.config["JSONIFY_PRETTYPRINT_REGULAR"] = True
-    # app.json_encoder = CustomJSONEncoder
+    # Load common configuration settings from config.py
+    app.config.from_pyfile("config.py")
 
+    # Override configuration settings as needed
     app.config.update(
         API_TITLE="HealtHub",
         API_VERSION="v1",
@@ -45,10 +47,11 @@ def create_app(is_test=False):
         OPENAPI_SWAGGER_UI_PATH="/swagger",
         OPENAPI_SWAGGER_UI_URL="https://cdn.jsdelivr.net/npm/swagger-ui-dist/",
         OPENAPI_URL_PREFIX="/",
+        SQLALCHEMY_ECHO=True,
+        DEBUG=True,
     )
 
-    app.config["SQLALCHEMY_ECHO"] = True
-
+    # app.config["SQLALCHEMY_ECHO"] = True
     if is_test is True:
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///test.db"
     else:
@@ -58,23 +61,23 @@ def create_app(is_test=False):
 
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+    # Initialize cache with app
+    cache.init_app(app)
+
+    # Initialize database
     db.init_app(app)
-
-    CORS(app)
-
-    # with app.app_context():
-    #     db.create_all()
-
     Migrate(app, db)
 
-    app.config["DEBUG"] = True
+    # Enable CORS
+    CORS(app)
 
+    # JWT configuration
     jwt = JWTManager(app)
-
     app.config["JWT_SECRET_KEY"] = "Tim Depok RevoU"
     app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 36000  #  Expires in 10 hours
     app.config["JWT_REFRESH_TOKEN_EXPIRES"] = 2592000  #  Expires in 30 days
 
+    # JWT error handlers
     @jwt.expired_token_loader
     def expired_token_callback(expired_token, jwt_data):
         return jsonify({"message": "Token has expired"}), 401
