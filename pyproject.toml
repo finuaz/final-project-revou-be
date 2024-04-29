@@ -45,6 +45,8 @@ pytest = "^8.1.1"
 sentry-sdk = {extras = ["flask"], version = "^1.45.0"}
 marshmallow-enum = "^1.5.1"
 flask-cors = "^4.0.0"
+flask-caching = "^2.2.0"
+redis = "^5.0.4"
 
 
 [build-system]

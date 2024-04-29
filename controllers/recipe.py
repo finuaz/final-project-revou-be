@@ -6,6 +6,7 @@ from flask_jwt_extended import (
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask import jsonify, current_app
+from extensions import cache
 
 from werkzeug.exceptions import Forbidden
 
@@ -48,6 +49,7 @@ class RecipeRegister(MethodView):
 @blp.route("/recipes/details/<int:recipe_in_details_by_id>")
 class RecipeDetailsById(MethodView):
     @blp.response(201, RecipeSchema)
+    @cache.cached(timeout=60)
     def get(self, recipe_in_details_by_id):
         try:
             recipe = RecipeModel.query.filter_by(id=recipe_in_details_by_id).first()
@@ -66,7 +68,9 @@ class RecipeDetailsById(MethodView):
 
 @blp.route("/recipes/details/<string:recipe_in_details_by_title>")
 class RecipeDetailsByTitle(MethodView):
+
     @blp.response(201, RecipeSchema)
+    @cache.cached(timeout=60)
     def get(self, recipe_in_details_by_title):
         try:
             recipe = RecipeModel.query.filter_by(
