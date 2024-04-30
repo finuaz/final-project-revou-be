@@ -3,6 +3,9 @@ from flask_smorest import abort
 import logging
 from sqlalchemy import func
 
+logger = logging.getLogger("recipe_origin_relation")
+logger.setLevel(logging.INFO)
+
 
 class RecipeOriginRelationModel(db.Model):
     __tablename__ = "Recipe_origin"
@@ -40,9 +43,14 @@ class RecipeOriginRelationModel(db.Model):
         return recipe_origin
 
     def update_recipe_origin(self, recipe_origin_data):
-        for key, value in recipe_origin_data.items():
-            setattr(self, key, value)
-        db.session.commit()
+        try:
+            for key, value in recipe_origin_data.items():
+                setattr(self, key, value)
+            db.session.commit()
+            logger.info("Transaction committed successfully.")
+        except Exception as e:
+            logger.error(f"Error occurred while updating recipe origin: {str(e)}")
+            db.session.rollback()
 
     def delete_recipe_origin(self):
         db.session.delete(self)

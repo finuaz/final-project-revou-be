@@ -1,4 +1,8 @@
 import os
+import sentry_sdk
+import logging
+import sys
+
 from flask import Flask, jsonify
 from flask_smorest import Api
 from dotenv import load_dotenv
@@ -6,8 +10,6 @@ from db import db
 from psycopg2 import _psycopg
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
-import sentry_sdk
-import logging
 from flask_cors import CORS
 from extensions import cache
 
@@ -96,10 +98,28 @@ def create_app(is_test=False):
     # api.register_blueprint(instructions_blueprint)
     api.register_blueprint(feeds_blueprint)
 
-    # Logging configuration
+    # logger
     logging.basicConfig(level=logging.ERROR)
 
-    # Logging example
+    logging.getLogger().setLevel(logging.INFO)
+
     app.logger.error("An unexpected error occurred")
+
+    # Create a logger for the RecipeOriginRelationModel
+    logger = logging.getLogger("recipe_origin_relation")
+    logger.setLevel(logging.INFO)
+
+    # Create a stream handler and set its level to INFO
+    stream_handler = logging.StreamHandler(sys.stdout)
+    stream_handler.setLevel(logging.INFO)
+
+    # Create a formatter and set the format for the handler
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    stream_handler.setFormatter(formatter)
+
+    # Add the handler to the logger
+    logger.addHandler(stream_handler)
 
     return app

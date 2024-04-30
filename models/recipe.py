@@ -9,7 +9,7 @@ class RecipeModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     author_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=False)
-    title = db.Column(db.String(100), nullable=False)
+    title = db.Column(db.String(100), nullable=False, unique=True)
     description = db.Column(db.String(300), nullable=False)
     nutriscore = db.Column(db.Integer, nullable=True)
     cooktime = db.Column(db.Integer, nullable=False)
