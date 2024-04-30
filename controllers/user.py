@@ -34,6 +34,18 @@ class UserRegister(MethodView):
     @blp.arguments(UserRegisterSchema)
     @blp.response(201, UserRegisterSchema)
     def post(self, user_data):
+
+        email_existing = UserModel.query.filter_by(email=user_data["email"]).first()
+        username_existing = UserModel.query.filter_by(
+            username=user_data["username"]
+        ).first()
+
+        if email_existing:
+            abort(409, message="Email has been used")
+
+        if username_existing:
+            abort(409, message="Username has been used")
+
         try:
             hashed_password = pbkdf2_sha512.hash(user_data["password"])
             user = UserModel(

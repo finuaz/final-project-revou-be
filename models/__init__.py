@@ -7,7 +7,8 @@ from .like import LikeModel
 from .comment import CommentModel
 
 from .recipe import RecipeModel
-from .instruction import InstructionModel
+
+# from .instruction import InstructionModel
 from .recipe_attachment import AttachmentModel
 from .food_category import CategoryModel
 from .food_group import GroupModel
