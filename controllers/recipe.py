@@ -230,24 +230,40 @@ class RecipeDetailsByTitle(MethodView):
             recipe_category = RecipeCategoryRelationModel.query.filter_by(
                 recipe_id=recipe.id
             ).first()
-            category = CategoryModel.query.filter_by(
-                id=recipe_category.category_id
-            ).first()
-            recipe.category = category.category
+            if recipe_category:
+                category = CategoryModel.query.get(recipe_origin.origin_id)
+                if category:
+                    recipe.category = category.category
+                else:
+                    recipe.category = None
+            else:
+                recipe.category = None
 
             # finding type
             recipe_type = RecipeTypeRelationModel.query.filter_by(
                 recipe_id=recipe.id
             ).first()
-            type = TypeModel.query.filter_by(id=recipe_type.type_id).first()
-            recipe.type = type.type
+            if recipe_type:
+                type = TypeModel.query.get(recipe_origin.origin_id)
+                if type:
+                    recipe.type = type.type
+                else:
+                    recipe.type = None
+            else:
+                recipe.type = None
 
             # finding origin
             recipe_origin = RecipeOriginRelationModel.query.filter_by(
                 recipe_id=recipe.id
             ).first()
-            origin = OriginModel.query.filter_by(id=recipe_origin.origin_id).first()
-            recipe.origin = origin.origin
+            if recipe_origin:
+                origin = OriginModel.query.get(recipe_origin.origin_id)
+                if origin:
+                    recipe.origin = origin.origin
+                else:
+                    recipe.origin = None
+            else:
+                recipe.origin = None
 
             # finding tag
             recipe_tags = RecipeTagRelationModel.query.filter_by(
@@ -419,19 +435,22 @@ class RecipeDelete(MethodView):
     @blp.response(204, "Recipe deleted successfully")
     @jwt_required()
     def delete(self, recipe_in_details_by_id):
-        print("ok")
+
         user_id = get_jwt_identity()["id"]
         recipe = RecipeModel.query.filter_by(id=recipe_in_details_by_id).first()
-        print("step 1")
 
         if not recipe:
             abort(404, "Recipe not found")
-        print("step 1.2")
+
         if recipe.author_id != user_id:
             abort(403, "You are not authorized to delete this recipe")
-        print("step 2")
 
         try:
+
+            RecipeCategoryRelationModel.query.filter_by(recipe_id=recipe.id).delete()
+            RecipeTypeRelationModel.query.filter_by(recipe_id=recipe.id).delete()
+            RecipeOriginRelationModel.query.filter_by(recipe_id=recipe.id).delete()
+            RecipeTagRelationModel.query.filter_by(recipe_id=recipe.id).delete()
             recipe.delete_recipe()
 
             return jsonify({"message": "Recipe deleted successfully"}), 200
