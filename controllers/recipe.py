@@ -22,6 +22,7 @@ from models import (
     RecipeOriginRelationModel,
     TagModel,
     RecipeTagRelationModel,
+    AttachmentModel,
 )
 
 from schemas import (
@@ -33,6 +34,7 @@ from utils import (
     find_type,
     find_origin,
     find_tag,
+    find_attachment,
     increment_view,
 )
 
@@ -145,6 +147,16 @@ class RecipeRegister(MethodView):
                     recipe_tag.add_recipe_tag()
                 recipe.tags = tags
 
+            # add attachment
+            if "attachment" in recipe_data:
+                attachment = AttachmentModel(
+                    recipe_id=recipe.id,
+                    attachment_link=recipe_data["attachment"],
+                )
+
+                attachment.add_attachment()
+                recipe.attachment = attachment.attachment_link
+
         except IntegrityError:
             abort(400, message="recipe with that title already exists")
         except SQLAlchemyError as e:
@@ -161,14 +173,12 @@ class RecipeDetailsById(MethodView):
             if not recipe:
                 abort(404, "Recipe not found")
 
-            # finding category, type, origin, tag
+            # finding category, type, origin, tag, attachment
             recipe.categories = find_category(recipe_in_details_by_id)
-
             recipe.type = find_type(recipe_in_details_by_id)
-
             recipe.origin = find_origin(recipe_in_details_by_id)
-
             recipe.tags = find_tag(recipe_in_details_by_id)
+            recipe.attachment = find_attachment(recipe_in_details_by_id)
 
             increment_view(recipe)
 
@@ -196,12 +206,10 @@ class RecipeDetailsByTitle(MethodView):
 
             # finding category, type, origin, tag
             recipe.categories = find_category(recipe.id)
-
             recipe.type = find_type(recipe.id)
-
             recipe.origin = find_origin(recipe.id)
-
             recipe.tags = find_tag(recipe.id)
+            recipe.attachment = find_attachment(recipe.id)
 
             increment_view(recipe)
 
@@ -347,6 +355,43 @@ class RecipeUpdate(MethodView):
                     recipe_tag.add_recipe_tag()
                 recipe.tags = updated_tags
 
+            # update attachment
+
+            if "attachment" in recipe_data:
+
+                existing_attachment = AttachmentModel.query.filter_by(
+                    attachment_link=recipe_data["attachment"]
+                ).first()
+
+                if existing_attachment:
+
+                    # check if the image has been used by other recipe
+                    if existing_attachment.recipe_id != recipe.id:
+                        abort(403, "Attachment has been used by other recipe")
+
+                    if existing_attachment.attachment_link == recipe_data["attachment"]:
+                        recipe.attachment = existing_attachment.attachment_link
+
+                    else:
+                        AttachmentModel.query.filter_by(recipe_id=recipe.id).delete()
+
+                        new_attachment = AttachmentModel(
+                            recipe_id=recipe.id,
+                            attachment_link=recipe_data["attachment"],
+                        )
+
+                        new_attachment.add_attachment()
+                        recipe.attachment = new_attachment.attachment_link
+
+                else:
+                    new_attachment = AttachmentModel(
+                        recipe_id=recipe.id,
+                        attachment_link=recipe_data["attachment"],
+                    )
+
+                    new_attachment.add_attachment()
+                    recipe.attachment = new_attachment.attachment_link
+
             return RecipeSchema().dump(recipe), 200
 
         except Forbidden as e:
@@ -374,6 +419,7 @@ class RecipeDelete(MethodView):
 
         try:
 
+            AttachmentModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeCategoryRelationModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeTypeRelationModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeOriginRelationModel.query.filter_by(recipe_id=recipe.id).delete()

@@ -3,6 +3,7 @@ from .recipe_helpers import (
     find_type,
     find_origin,
     find_tag,
+    find_attachment,
     increment_view,
 )
 

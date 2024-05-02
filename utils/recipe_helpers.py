@@ -7,6 +7,7 @@ from models import (
     RecipeTypeRelationModel,
     RecipeOriginRelationModel,
     RecipeTagRelationModel,
+    AttachmentModel,
 )
 
 from db import db
@@ -47,6 +48,14 @@ def find_tag(recipe_id):
     recipe_tags = RecipeTagRelationModel.query.filter_by(recipe_id=recipe_id).all()
     tags = [TagModel.query.get(recipe_tag.tag_id).tagname for recipe_tag in recipe_tags]
     return tags
+
+
+def find_attachment(recipe_id):
+    attachment = AttachmentModel.query.filter_by(recipe_id=recipe_id).first()
+    if attachment:
+        return attachment.attachment_link
+    else:
+        return None
 
 
 def increment_view(recipe):
