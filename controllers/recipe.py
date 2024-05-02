@@ -24,8 +24,17 @@ from models import (
     TagModel,
     RecipeTagRelationModel,
 )
+
 from schemas import (
     RecipeSchema,
+)
+
+from utils import (
+    find_category,
+    find_type,
+    find_origin,
+    find_tag,
+    increment_view,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -150,58 +159,16 @@ class RecipeDetailsById(MethodView):
             if not recipe:
                 abort(404, "Recipe not found")
 
-            # finding category
-            recipe_category = RecipeCategoryRelationModel.query.filter_by(
-                recipe_id=recipe_in_details_by_id
-            ).first()
-            if recipe_category:
-                category = CategoryModel.query.get(recipe_origin.origin_id)
-                if category:
-                    recipe.category = category.category
-                else:
-                    recipe.category = None
-            else:
-                recipe.category = None
+            # finding category, type, origin, tag
+            recipe.category = find_category(recipe_in_details_by_id)
 
-            # finding type
-            recipe_type = RecipeOriginRelationModel.query.filter_by(
-                recipe_id=recipe_in_details_by_id
-            ).first()
-            if recipe_type:
-                type = TypeModel.query.get(recipe_origin.origin_id)
-                if type:
-                    recipe.type = type.type
-                else:
-                    recipe.type = None
-            else:
-                recipe.type = None
+            recipe.type = find_type(recipe_in_details_by_id)
 
-            # finding origin
-            recipe_origin = RecipeOriginRelationModel.query.filter_by(
-                recipe_id=recipe_in_details_by_id
-            ).first()
-            if recipe_origin:
-                origin = OriginModel.query.get(recipe_origin.origin_id)
-                if origin:
-                    recipe.origin = origin.origin
-                else:
-                    recipe.origin = None
-            else:
-                recipe.origin = None
+            recipe.origin = find_origin(recipe_in_details_by_id)
 
-            # finding tag
-            recipe_tags = RecipeTagRelationModel.query.filter_by(
-                recipe_id=recipe_in_details_by_id
-            ).all()
-            tags = [
-                TagModel.query.get(recipe_tag.tag_id).tagname
-                for recipe_tag in recipe_tags
-            ]
-            recipe.tag = tags
+            recipe.tag = find_tag(recipe_in_details_by_id)
 
-            # incrementing view counts
-            recipe.view_count += 1
-            db.session.commit()
+            increment_view(recipe)
 
             serialized_recipe = RecipeSchema().dump(recipe)
             return jsonify(serialized_recipe), 200
@@ -217,7 +184,6 @@ class RecipeDetailsById(MethodView):
 class RecipeDetailsByTitle(MethodView):
 
     @blp.response(201, RecipeSchema)
-    @cache.cached(timeout=60)
     def get(self, recipe_in_details_by_title):
         try:
             recipe = RecipeModel.query.filter_by(
@@ -226,54 +192,16 @@ class RecipeDetailsByTitle(MethodView):
             if not recipe:
                 abort(404, "Recipe not found")
 
-            # finding category
-            recipe_category = RecipeCategoryRelationModel.query.filter_by(
-                recipe_id=recipe.id
-            ).first()
-            if recipe_category:
-                category = CategoryModel.query.get(recipe_origin.origin_id)
-                if category:
-                    recipe.category = category.category
-                else:
-                    recipe.category = None
-            else:
-                recipe.category = None
+            # finding category, type, origin, tag
+            recipe.category = find_category(recipe.id)
 
-            # finding type
-            recipe_type = RecipeTypeRelationModel.query.filter_by(
-                recipe_id=recipe.id
-            ).first()
-            if recipe_type:
-                type = TypeModel.query.get(recipe_origin.origin_id)
-                if type:
-                    recipe.type = type.type
-                else:
-                    recipe.type = None
-            else:
-                recipe.type = None
+            recipe.type = find_type(recipe.id)
 
-            # finding origin
-            recipe_origin = RecipeOriginRelationModel.query.filter_by(
-                recipe_id=recipe.id
-            ).first()
-            if recipe_origin:
-                origin = OriginModel.query.get(recipe_origin.origin_id)
-                if origin:
-                    recipe.origin = origin.origin
-                else:
-                    recipe.origin = None
-            else:
-                recipe.origin = None
+            recipe.origin = find_origin(recipe.id)
 
-            # finding tag
-            recipe_tags = RecipeTagRelationModel.query.filter_by(
-                recipe_id=recipe.id
-            ).all()
-            tags = [
-                TagModel.query.get(recipe_tag.tag_id).tagname
-                for recipe_tag in recipe_tags
-            ]
-            recipe.tag = tags
+            recipe.tag = find_tag(recipe.id)
+
+            increment_view(recipe)
 
             serialized_recipe = RecipeSchema().dump(recipe)
             return jsonify(serialized_recipe), 200
@@ -297,6 +225,8 @@ class RecipeUpdate(MethodView):
 
         if recipe.author_id != user_id:
             abort(403, "You are not authorized to edit this recipe")
+
+        print(recipe)
 
         try:
 
@@ -367,6 +297,7 @@ class RecipeUpdate(MethodView):
 
             # update origin
             if "origin" in recipe_data:
+
                 existing_origin = OriginModel.query.filter_by(
                     origin=recipe_data["origin"]
                 ).first()
@@ -385,7 +316,7 @@ class RecipeUpdate(MethodView):
 
                     RecipeOriginRelationModel.query.filter_by(
                         recipe_id=recipe.id
-                    ).delete().query.filter_by(recipe_id=recipe.id).delete()
+                    ).delete()
 
                     new_origin = OriginModel(origin=recipe_data["origin"])
                     new_origin.add_origin()
