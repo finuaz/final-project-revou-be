@@ -1,5 +1,4 @@
 from models import (
-    RecipeModel,
     CategoryModel,
     TypeModel,
     OriginModel,
@@ -14,14 +13,14 @@ from db import db
 
 
 def find_category(recipe_id):
-    recipe_category = RecipeCategoryRelationModel.query.filter_by(
+    recipe_categories = RecipeCategoryRelationModel.query.filter_by(
         recipe_id=recipe_id
-    ).first()
-    if recipe_category:
-        category = CategoryModel.query.get(recipe_category.category_id)
-        return category.category
-    else:
-        return None
+    ).all()
+    categories = [
+        CategoryModel.query.get(recipe_category.category_id).category
+        for recipe_category in recipe_categories
+    ]
+    return categories
 
 
 def find_type(recipe_id):

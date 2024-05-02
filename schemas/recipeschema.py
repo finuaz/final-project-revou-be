@@ -15,10 +15,10 @@ class RecipeSchema(Schema):
     instruction = fields.String()
     view_count = fields.Integer()
 
-    category = fields.String()
+    categories = fields.List(fields.String())
     type = fields.String()
     origin = fields.String()
-    tag = fields.List(fields.String())
+    tags = fields.List(fields.String())
 
     created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")

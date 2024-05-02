@@ -8,7 +8,6 @@ from flask_jwt_extended import (
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask import jsonify, current_app
-from extensions import cache
 from db import db
 
 from werkzeug.exceptions import Forbidden
@@ -72,23 +71,26 @@ class RecipeRegister(MethodView):
 
             recipe.add_recipe()
 
-            # add category
-            if "category" in recipe_data:
-                category = CategoryModel.query.filter_by(
-                    category=recipe_data["category"]
-                ).first()
+            # add categories
+            if "categories" in recipe_data:
+                categories = recipe_data["categories"]
 
-                if not category:
-                    category = CategoryModel(category=recipe_data["category"])
-                    category.add_category()
+                for category_name in categories:
+                    category = CategoryModel.query.filter_by(
+                        category=category_name
+                    ).first()
 
-                recipe_category = RecipeCategoryRelationModel(
-                    recipe_id=recipe.id,
-                    category_id=category.id,
-                )
+                    if not category:
+                        category = CategoryModel(category=category_name)
+                        category.add_category()
 
-                recipe_category.add_recipe_category()
-                recipe.category = category.category
+                    recipe_category = RecipeCategoryRelationModel(
+                        recipe_id=recipe.id,
+                        category_id=category.id,
+                    )
+
+                    recipe_category.add_recipe_category()
+                recipe.categories = categories
 
             # add type
             if "type" in recipe_data:
@@ -125,8 +127,8 @@ class RecipeRegister(MethodView):
                 recipe.origin = origin.origin
 
             # add tag
-            if "tag" in recipe_data:
-                tags = recipe_data["tag"]
+            if "tags" in recipe_data:
+                tags = recipe_data["tags"]
 
                 for tag_name in tags:
                     tag = TagModel.query.filter_by(tagname=tag_name).first()
@@ -141,7 +143,7 @@ class RecipeRegister(MethodView):
                     )
 
                     recipe_tag.add_recipe_tag()
-                recipe.tag = tags
+                recipe.tags = tags
 
         except IntegrityError:
             abort(400, message="recipe with that title already exists")
@@ -160,13 +162,13 @@ class RecipeDetailsById(MethodView):
                 abort(404, "Recipe not found")
 
             # finding category, type, origin, tag
-            recipe.category = find_category(recipe_in_details_by_id)
+            recipe.categories = find_category(recipe_in_details_by_id)
 
             recipe.type = find_type(recipe_in_details_by_id)
 
             recipe.origin = find_origin(recipe_in_details_by_id)
 
-            recipe.tag = find_tag(recipe_in_details_by_id)
+            recipe.tags = find_tag(recipe_in_details_by_id)
 
             increment_view(recipe)
 
@@ -193,13 +195,13 @@ class RecipeDetailsByTitle(MethodView):
                 abort(404, "Recipe not found")
 
             # finding category, type, origin, tag
-            recipe.category = find_category(recipe.id)
+            recipe.categories = find_category(recipe.id)
 
             recipe.type = find_type(recipe.id)
 
             recipe.origin = find_origin(recipe.id)
 
-            recipe.tag = find_tag(recipe.id)
+            recipe.tags = find_tag(recipe.id)
 
             increment_view(recipe)
 
@@ -233,36 +235,30 @@ class RecipeUpdate(MethodView):
             recipe.update_recipe(recipe_data)
 
             # update category
-            if "category" in recipe_data:
+            if "categories" in recipe_data:
+                updated_categories = recipe_data["categories"]
 
-                existing_category = CategoryModel.query.filter_by(
-                    category=recipe_data["category"]
-                ).first()
+                # Remove existing category relations for the recipe
+                RecipeCategoryRelationModel.query.filter_by(
+                    recipe_id=recipe.id
+                ).delete()
 
-                if existing_category:
-                    recipe_category = RecipeCategoryRelationModel.query.filter_by(
-                        recipe_id=recipe.id
+                # Add new category relations
+                for category_name in updated_categories:
+                    category = CategoryModel.query.filter_by(
+                        category=category_name
                     ).first()
 
-                    recipe_category.category_id = existing_category.id
-                    db.session.commit()
-                    recipe.category = existing_category.category
-
-                else:
-                    RecipeCategoryRelationModel.query.filter_by(
-                        recipe_id=recipe.id
-                    ).delete()
-
-                    new_category = CategoryModel(category=recipe_data["category"])
-                    new_category.add_category()
+                    if not category:
+                        category = CategoryModel(category=category_name)
+                        category.add_category()
 
                     recipe_category = RecipeCategoryRelationModel(
                         recipe_id=recipe.id,
-                        category_id=new_category.id,
+                        category_id=category.id,
                     )
-
                     recipe_category.add_recipe_category()
-                    recipe.category = new_category.category
+                recipe.categories = updated_categories
 
             # update type
             if "type" in recipe_data:
@@ -349,7 +345,7 @@ class RecipeUpdate(MethodView):
                         tag_id=tag.id,
                     )
                     recipe_tag.add_recipe_tag()
-                recipe.tag = updated_tags
+                recipe.tags = updated_tags
 
             return RecipeSchema().dump(recipe), 200
 
