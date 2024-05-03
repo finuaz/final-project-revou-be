@@ -22,7 +22,10 @@ from models import (
     RecipeOriginRelationModel,
     TagModel,
     RecipeTagRelationModel,
+    IngredientModel,
+    RecipeIngredientRelationModel,
     AttachmentModel,
+    NutritionModel,
 )
 
 from schemas import (
@@ -36,6 +39,19 @@ from utils import (
     find_tag,
     find_attachment,
     increment_view,
+    find_serving_per_container,
+    find_serving_size,
+    find_calories,
+    find_total_fat,
+    find_total_carbohydrate,
+    find_total_sugar,
+    find_cholesterol,
+    find_protein,
+    find_vitamin_d,
+    find_sodium,
+    find_calcium,
+    find_potassium,
+    find_iron,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -157,6 +173,40 @@ class RecipeRegister(MethodView):
                 attachment.add_attachment()
                 recipe.attachment = attachment.attachment_link
 
+            # add nutrition
+            nutrition = NutritionModel(
+                recipe_id=recipe.id,
+                serving_per_container=recipe_data.get("serving_per_container"),
+                serving_size=recipe_data.get("serving_size"),
+                calories=recipe_data.get("calories"),
+                total_fat=recipe_data.get("total_fat"),
+                total_carbohydrate=recipe_data.get("total_carbohydrate"),
+                total_sugar=recipe_data.get("total_sugar"),
+                cholesterol=recipe_data.get("cholesterol"),
+                protein=recipe_data.get("protein"),
+                vitamin_d=recipe_data.get("vitamin_d"),
+                sodium=recipe_data.get("sodium"),
+                calcium=recipe_data.get("calcium"),
+                potassium=recipe_data.get("potassium"),
+                iron=recipe_data.get("iron"),
+            )
+
+            nutrition.add_nutrition()
+
+            recipe.serving_per_container = nutrition.serving_per_container
+            recipe.serving_size = nutrition.serving_size
+            recipe.calories = nutrition.calories
+            recipe.total_fat = nutrition.total_fat
+            recipe.total_carbohydrate = nutrition.total_carbohydrate
+            recipe.total_sugar = nutrition.total_sugar
+            recipe.cholesterol = nutrition.cholesterol
+            recipe.protein = nutrition.protein
+            recipe.vitamin_d = nutrition.vitamin_d
+            recipe.sodium = nutrition.sodium
+            recipe.calcium = nutrition.calcium
+            recipe.potassium = nutrition.potassium
+            recipe.iron = nutrition.iron
+
         except IntegrityError:
             abort(400, message="recipe with that title already exists")
         except SQLAlchemyError as e:
@@ -179,6 +229,23 @@ class RecipeDetailsById(MethodView):
             recipe.origin = find_origin(recipe_in_details_by_id)
             recipe.tags = find_tag(recipe_in_details_by_id)
             recipe.attachment = find_attachment(recipe_in_details_by_id)
+
+            # find nutrition data
+            recipe.serving_per_container = find_serving_per_container(
+                recipe_in_details_by_id
+            )
+            recipe.serving_size = find_serving_size(recipe_in_details_by_id)
+            recipe.calories = find_calories(recipe_in_details_by_id)
+            recipe.total_fat = find_total_fat(recipe_in_details_by_id)
+            recipe.total_carbohydrate = find_total_carbohydrate(recipe_in_details_by_id)
+            recipe.total_sugar = find_total_sugar(recipe_in_details_by_id)
+            recipe.cholesterol = find_cholesterol(recipe_in_details_by_id)
+            recipe.protein = find_protein(recipe_in_details_by_id)
+            recipe.vitamin_d = find_vitamin_d(recipe_in_details_by_id)
+            recipe.sodium = find_sodium(recipe_in_details_by_id)
+            recipe.calcium = find_calcium(recipe_in_details_by_id)
+            recipe.potassium = find_potassium(recipe_in_details_by_id)
+            recipe.iron = find_iron(recipe_in_details_by_id)
 
             increment_view(recipe)
 
@@ -210,6 +277,21 @@ class RecipeDetailsByTitle(MethodView):
             recipe.origin = find_origin(recipe.id)
             recipe.tags = find_tag(recipe.id)
             recipe.attachment = find_attachment(recipe.id)
+
+            # find nutrition data
+            recipe.serving_per_container = find_serving_per_container(recipe.id)
+            recipe.serving_size = find_serving_size(recipe.id)
+            recipe.calories = find_calories(recipe.id)
+            recipe.total_fat = find_total_fat(recipe.id)
+            recipe.total_carbohydrate = find_total_carbohydrate(recipe.id)
+            recipe.total_sugar = find_total_sugar(recipe.id)
+            recipe.cholesterol = find_cholesterol(recipe.id)
+            recipe.protein = find_protein(recipe.id)
+            recipe.vitamin_d = find_vitamin_d(recipe.id)
+            recipe.sodium = find_sodium(recipe.id)
+            recipe.calcium = find_calcium(recipe.id)
+            recipe.potassium = find_potassium(recipe.id)
+            recipe.iron = find_iron(recipe.id)
 
             increment_view(recipe)
 
@@ -392,6 +474,26 @@ class RecipeUpdate(MethodView):
                     new_attachment.add_attachment()
                     recipe.attachment = new_attachment.attachment_link
 
+            # update nutrition
+            nutrition = NutritionModel.query.filter_by(
+                recipe_id=recipe_in_details_by_id
+            ).first()
+            nutrition.update_nutrition(recipe_data)
+
+            recipe.serving_per_container = find_serving_per_container(recipe.id)
+            recipe.serving_size = find_serving_size(recipe.id)
+            recipe.calories = find_calories(recipe.id)
+            recipe.total_fat = find_total_fat(recipe.id)
+            recipe.total_carbohydrate = find_total_carbohydrate(recipe.id)
+            recipe.total_sugar = find_total_sugar(recipe.id)
+            recipe.cholesterol = find_cholesterol(recipe.id)
+            recipe.protein = find_protein(recipe.id)
+            recipe.vitamin_d = find_vitamin_d(recipe.id)
+            recipe.sodium = find_sodium(recipe.id)
+            recipe.calcium = find_calcium(recipe.id)
+            recipe.potassium = find_potassium(recipe.id)
+            recipe.iron = find_iron(recipe.id)
+
             return RecipeSchema().dump(recipe), 200
 
         except Forbidden as e:
@@ -419,6 +521,7 @@ class RecipeDelete(MethodView):
 
         try:
 
+            NutritionModel.query.filter_by(recipe_id=recipe.id).delete()
             AttachmentModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeCategoryRelationModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeTypeRelationModel.query.filter_by(recipe_id=recipe.id).delete()

@@ -8,6 +8,7 @@ from models import (
     RecipeOriginRelationModel,
     RecipeTagRelationModel,
     AttachmentModel,
+    NutritionModel,
 )
 
 from db import db
@@ -56,6 +57,98 @@ def find_attachment(recipe_id):
         return attachment.attachment_link
     else:
         return None
+
+
+# Nutrition group
+def find_serving_per_container(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.serving_per_container
+    return None
+
+
+def find_serving_size(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.serving_size
+    return None
+
+
+def find_calories(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.calories
+    return None
+
+
+def find_total_fat(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.total_fat
+    return None
+
+
+def find_total_carbohydrate(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.total_carbohydrate
+    return None
+
+
+def find_total_sugar(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.total_sugar
+    return None
+
+
+def find_cholesterol(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.cholesterol
+    return None
+
+
+def find_protein(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.protein
+    return None
+
+
+def find_vitamin_d(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.vitamin_d
+    return None
+
+
+def find_sodium(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.sodium
+    return None
+
+
+def find_calcium(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.calcium
+    return None
+
+
+def find_potassium(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.potassium
+    return None
+
+
+def find_iron(recipe_id):
+    nutrition = NutritionModel.query.filter_by(recipe_id=recipe_id).first()
+    if nutrition:
+        return nutrition.iron
+    return None
 
 
 def increment_view(recipe):
