@@ -15,32 +15,35 @@ class RecipeSchema(Schema):
     instruction = fields.String()
     view_count = fields.Integer()
 
-    category = fields.String()
+    categories = fields.List(fields.String())
     type = fields.String()
     origin = fields.String()
-    tag = fields.List(fields.String())
+    tags = fields.List(fields.String())
+
+    attachment = fields.String()
+
+    # Nutrition group
+    serving_per_container = fields.Integer()
+    serving_size = fields.String()
+
+    calories = fields.Decimal(places=2, rounding=None)
+    total_fat = fields.Decimal(places=2, rounding=None)
+    total_carbohydrate = fields.Decimal(places=2, rounding=None)
+    total_sugar = fields.Decimal(places=2, rounding=None)
+    cholesterol = fields.Decimal(places=2, rounding=None)
+    protein = fields.Decimal(places=2, rounding=None)
+    vitamin_d = fields.Decimal(places=2, rounding=None)
+
+    sodium = fields.Decimal(places=2, rounding=None)
+    calcium = fields.Decimal(places=2, rounding=None)
+    potassium = fields.Decimal(places=2, rounding=None)
+    iron = fields.Decimal(places=2, rounding=None)
 
     created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
 
     class Meta:
         ordered = True
-
-
-class CategorySchema(Schema):
-    category = fields.String()
-
-
-class TypeSchema(Schema):
-    type = fields.String()
-
-
-class OriginSchema(Schema):
-    origin = fields.String()
-
-
-class TagSchema(Schema):
-    tagname = fields.String()
 
 
 class RecipeImageSchema(Schema):

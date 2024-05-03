@@ -67,21 +67,3 @@ class UserResetPasswordSchema(Schema):
 class UserDeletionSchema(Schema):
     id = fields.Integer(dump_only=True)
     password = fields.String(required=True)
-
-
-###
-# class UserModelSchema(Schema):
-#     id = fields.Integer(dump_only=True)
-#     username = fields.String(required=True)
-#     first_name = fields.String(required=True)
-#     last_name = fields.String(required=True)
-#     email = fields.String(required=True)
-#     password = fields.String(required=True)
-#     reset_password_question = fields.String()
-#     reset_password_answer = fields.String()
-#     image = fields.String()
-#     role = fields.String()
-#     bio = fields.String()
-#     location = fields.String()
-#     created_at = fields.DateTime()
-#     updated_at = fields.DateTime()

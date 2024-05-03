@@ -8,7 +8,6 @@ from flask_jwt_extended import (
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask import jsonify, current_app
-from extensions import cache
 from db import db
 
 from werkzeug.exceptions import Forbidden
@@ -23,9 +22,36 @@ from models import (
     RecipeOriginRelationModel,
     TagModel,
     RecipeTagRelationModel,
+    IngredientModel,
+    RecipeIngredientRelationModel,
+    AttachmentModel,
+    NutritionModel,
 )
+
 from schemas import (
     RecipeSchema,
+)
+
+from utils import (
+    find_category,
+    find_type,
+    find_origin,
+    find_tag,
+    find_attachment,
+    increment_view,
+    find_serving_per_container,
+    find_serving_size,
+    find_calories,
+    find_total_fat,
+    find_total_carbohydrate,
+    find_total_sugar,
+    find_cholesterol,
+    find_protein,
+    find_vitamin_d,
+    find_sodium,
+    find_calcium,
+    find_potassium,
+    find_iron,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -63,23 +89,26 @@ class RecipeRegister(MethodView):
 
             recipe.add_recipe()
 
-            # add category
-            if "category" in recipe_data:
-                category = CategoryModel.query.filter_by(
-                    category=recipe_data["category"]
-                ).first()
+            # add categories
+            if "categories" in recipe_data:
+                categories = recipe_data["categories"]
 
-                if not category:
-                    category = CategoryModel(category=recipe_data["category"])
-                    category.add_category()
+                for category_name in categories:
+                    category = CategoryModel.query.filter_by(
+                        category=category_name
+                    ).first()
 
-                recipe_category = RecipeCategoryRelationModel(
-                    recipe_id=recipe.id,
-                    category_id=category.id,
-                )
+                    if not category:
+                        category = CategoryModel(category=category_name)
+                        category.add_category()
 
-                recipe_category.add_recipe_category()
-                recipe.category = category.category
+                    recipe_category = RecipeCategoryRelationModel(
+                        recipe_id=recipe.id,
+                        category_id=category.id,
+                    )
+
+                    recipe_category.add_recipe_category()
+                recipe.categories = categories
 
             # add type
             if "type" in recipe_data:
@@ -116,8 +145,8 @@ class RecipeRegister(MethodView):
                 recipe.origin = origin.origin
 
             # add tag
-            if "tag" in recipe_data:
-                tags = recipe_data["tag"]
+            if "tags" in recipe_data:
+                tags = recipe_data["tags"]
 
                 for tag_name in tags:
                     tag = TagModel.query.filter_by(tagname=tag_name).first()
@@ -132,7 +161,51 @@ class RecipeRegister(MethodView):
                     )
 
                     recipe_tag.add_recipe_tag()
-                recipe.tag = tags
+                recipe.tags = tags
+
+            # add attachment
+            if "attachment" in recipe_data:
+                attachment = AttachmentModel(
+                    recipe_id=recipe.id,
+                    attachment_link=recipe_data["attachment"],
+                )
+
+                attachment.add_attachment()
+                recipe.attachment = attachment.attachment_link
+
+            # add nutrition
+            nutrition = NutritionModel(
+                recipe_id=recipe.id,
+                serving_per_container=recipe_data.get("serving_per_container"),
+                serving_size=recipe_data.get("serving_size"),
+                calories=recipe_data.get("calories"),
+                total_fat=recipe_data.get("total_fat"),
+                total_carbohydrate=recipe_data.get("total_carbohydrate"),
+                total_sugar=recipe_data.get("total_sugar"),
+                cholesterol=recipe_data.get("cholesterol"),
+                protein=recipe_data.get("protein"),
+                vitamin_d=recipe_data.get("vitamin_d"),
+                sodium=recipe_data.get("sodium"),
+                calcium=recipe_data.get("calcium"),
+                potassium=recipe_data.get("potassium"),
+                iron=recipe_data.get("iron"),
+            )
+
+            nutrition.add_nutrition()
+
+            recipe.serving_per_container = nutrition.serving_per_container
+            recipe.serving_size = nutrition.serving_size
+            recipe.calories = nutrition.calories
+            recipe.total_fat = nutrition.total_fat
+            recipe.total_carbohydrate = nutrition.total_carbohydrate
+            recipe.total_sugar = nutrition.total_sugar
+            recipe.cholesterol = nutrition.cholesterol
+            recipe.protein = nutrition.protein
+            recipe.vitamin_d = nutrition.vitamin_d
+            recipe.sodium = nutrition.sodium
+            recipe.calcium = nutrition.calcium
+            recipe.potassium = nutrition.potassium
+            recipe.iron = nutrition.iron
 
         except IntegrityError:
             abort(400, message="recipe with that title already exists")
@@ -150,58 +223,31 @@ class RecipeDetailsById(MethodView):
             if not recipe:
                 abort(404, "Recipe not found")
 
-            # finding category
-            recipe_category = RecipeCategoryRelationModel.query.filter_by(
-                recipe_id=recipe_in_details_by_id
-            ).first()
-            if recipe_category:
-                category = CategoryModel.query.get(recipe_origin.origin_id)
-                if category:
-                    recipe.category = category.category
-                else:
-                    recipe.category = None
-            else:
-                recipe.category = None
+            # finding category, type, origin, tag, attachment
+            recipe.categories = find_category(recipe_in_details_by_id)
+            recipe.type = find_type(recipe_in_details_by_id)
+            recipe.origin = find_origin(recipe_in_details_by_id)
+            recipe.tags = find_tag(recipe_in_details_by_id)
+            recipe.attachment = find_attachment(recipe_in_details_by_id)
 
-            # finding type
-            recipe_type = RecipeOriginRelationModel.query.filter_by(
-                recipe_id=recipe_in_details_by_id
-            ).first()
-            if recipe_type:
-                type = TypeModel.query.get(recipe_origin.origin_id)
-                if type:
-                    recipe.type = type.type
-                else:
-                    recipe.type = None
-            else:
-                recipe.type = None
+            # find nutrition data
+            recipe.serving_per_container = find_serving_per_container(
+                recipe_in_details_by_id
+            )
+            recipe.serving_size = find_serving_size(recipe_in_details_by_id)
+            recipe.calories = find_calories(recipe_in_details_by_id)
+            recipe.total_fat = find_total_fat(recipe_in_details_by_id)
+            recipe.total_carbohydrate = find_total_carbohydrate(recipe_in_details_by_id)
+            recipe.total_sugar = find_total_sugar(recipe_in_details_by_id)
+            recipe.cholesterol = find_cholesterol(recipe_in_details_by_id)
+            recipe.protein = find_protein(recipe_in_details_by_id)
+            recipe.vitamin_d = find_vitamin_d(recipe_in_details_by_id)
+            recipe.sodium = find_sodium(recipe_in_details_by_id)
+            recipe.calcium = find_calcium(recipe_in_details_by_id)
+            recipe.potassium = find_potassium(recipe_in_details_by_id)
+            recipe.iron = find_iron(recipe_in_details_by_id)
 
-            # finding origin
-            recipe_origin = RecipeOriginRelationModel.query.filter_by(
-                recipe_id=recipe_in_details_by_id
-            ).first()
-            if recipe_origin:
-                origin = OriginModel.query.get(recipe_origin.origin_id)
-                if origin:
-                    recipe.origin = origin.origin
-                else:
-                    recipe.origin = None
-            else:
-                recipe.origin = None
-
-            # finding tag
-            recipe_tags = RecipeTagRelationModel.query.filter_by(
-                recipe_id=recipe_in_details_by_id
-            ).all()
-            tags = [
-                TagModel.query.get(recipe_tag.tag_id).tagname
-                for recipe_tag in recipe_tags
-            ]
-            recipe.tag = tags
-
-            # incrementing view counts
-            recipe.view_count += 1
-            db.session.commit()
+            increment_view(recipe)
 
             serialized_recipe = RecipeSchema().dump(recipe)
             return jsonify(serialized_recipe), 200
@@ -217,7 +263,6 @@ class RecipeDetailsById(MethodView):
 class RecipeDetailsByTitle(MethodView):
 
     @blp.response(201, RecipeSchema)
-    @cache.cached(timeout=60)
     def get(self, recipe_in_details_by_title):
         try:
             recipe = RecipeModel.query.filter_by(
@@ -226,54 +271,29 @@ class RecipeDetailsByTitle(MethodView):
             if not recipe:
                 abort(404, "Recipe not found")
 
-            # finding category
-            recipe_category = RecipeCategoryRelationModel.query.filter_by(
-                recipe_id=recipe.id
-            ).first()
-            if recipe_category:
-                category = CategoryModel.query.get(recipe_origin.origin_id)
-                if category:
-                    recipe.category = category.category
-                else:
-                    recipe.category = None
-            else:
-                recipe.category = None
+            # finding category, type, origin, tag
+            recipe.categories = find_category(recipe.id)
+            recipe.type = find_type(recipe.id)
+            recipe.origin = find_origin(recipe.id)
+            recipe.tags = find_tag(recipe.id)
+            recipe.attachment = find_attachment(recipe.id)
 
-            # finding type
-            recipe_type = RecipeTypeRelationModel.query.filter_by(
-                recipe_id=recipe.id
-            ).first()
-            if recipe_type:
-                type = TypeModel.query.get(recipe_origin.origin_id)
-                if type:
-                    recipe.type = type.type
-                else:
-                    recipe.type = None
-            else:
-                recipe.type = None
+            # find nutrition data
+            recipe.serving_per_container = find_serving_per_container(recipe.id)
+            recipe.serving_size = find_serving_size(recipe.id)
+            recipe.calories = find_calories(recipe.id)
+            recipe.total_fat = find_total_fat(recipe.id)
+            recipe.total_carbohydrate = find_total_carbohydrate(recipe.id)
+            recipe.total_sugar = find_total_sugar(recipe.id)
+            recipe.cholesterol = find_cholesterol(recipe.id)
+            recipe.protein = find_protein(recipe.id)
+            recipe.vitamin_d = find_vitamin_d(recipe.id)
+            recipe.sodium = find_sodium(recipe.id)
+            recipe.calcium = find_calcium(recipe.id)
+            recipe.potassium = find_potassium(recipe.id)
+            recipe.iron = find_iron(recipe.id)
 
-            # finding origin
-            recipe_origin = RecipeOriginRelationModel.query.filter_by(
-                recipe_id=recipe.id
-            ).first()
-            if recipe_origin:
-                origin = OriginModel.query.get(recipe_origin.origin_id)
-                if origin:
-                    recipe.origin = origin.origin
-                else:
-                    recipe.origin = None
-            else:
-                recipe.origin = None
-
-            # finding tag
-            recipe_tags = RecipeTagRelationModel.query.filter_by(
-                recipe_id=recipe.id
-            ).all()
-            tags = [
-                TagModel.query.get(recipe_tag.tag_id).tagname
-                for recipe_tag in recipe_tags
-            ]
-            recipe.tag = tags
+            increment_view(recipe)
 
             serialized_recipe = RecipeSchema().dump(recipe)
             return jsonify(serialized_recipe), 200
@@ -298,41 +318,37 @@ class RecipeUpdate(MethodView):
         if recipe.author_id != user_id:
             abort(403, "You are not authorized to edit this recipe")
 
+        print(recipe)
+
         try:
 
             recipe.update_recipe(recipe_data)
 
             # update category
-            if "category" in recipe_data:
+            if "categories" in recipe_data:
+                updated_categories = recipe_data["categories"]
 
-                existing_category = CategoryModel.query.filter_by(
-                    category=recipe_data["category"]
-                ).first()
+                # Remove existing category relations for the recipe
+                RecipeCategoryRelationModel.query.filter_by(
+                    recipe_id=recipe.id
+                ).delete()
 
-                if existing_category:
-                    recipe_category = RecipeCategoryRelationModel.query.filter_by(
-                        recipe_id=recipe.id
+                # Add new category relations
+                for category_name in updated_categories:
+                    category = CategoryModel.query.filter_by(
+                        category=category_name
                     ).first()
 
-                    recipe_category.category_id = existing_category.id
-                    db.session.commit()
-                    recipe.category = existing_category.category
-
-                else:
-                    RecipeCategoryRelationModel.query.filter_by(
-                        recipe_id=recipe.id
-                    ).delete()
-
-                    new_category = CategoryModel(category=recipe_data["category"])
-                    new_category.add_category()
+                    if not category:
+                        category = CategoryModel(category=category_name)
+                        category.add_category()
 
                     recipe_category = RecipeCategoryRelationModel(
                         recipe_id=recipe.id,
-                        category_id=new_category.id,
+                        category_id=category.id,
                     )
-
                     recipe_category.add_recipe_category()
-                    recipe.category = new_category.category
+                recipe.categories = updated_categories
 
             # update type
             if "type" in recipe_data:
@@ -367,6 +383,7 @@ class RecipeUpdate(MethodView):
 
             # update origin
             if "origin" in recipe_data:
+
                 existing_origin = OriginModel.query.filter_by(
                     origin=recipe_data["origin"]
                 ).first()
@@ -385,7 +402,7 @@ class RecipeUpdate(MethodView):
 
                     RecipeOriginRelationModel.query.filter_by(
                         recipe_id=recipe.id
-                    ).delete().query.filter_by(recipe_id=recipe.id).delete()
+                    ).delete()
 
                     new_origin = OriginModel(origin=recipe_data["origin"])
                     new_origin.add_origin()
@@ -418,7 +435,64 @@ class RecipeUpdate(MethodView):
                         tag_id=tag.id,
                     )
                     recipe_tag.add_recipe_tag()
-                recipe.tag = updated_tags
+                recipe.tags = updated_tags
+
+            # update attachment
+
+            if "attachment" in recipe_data:
+
+                existing_attachment = AttachmentModel.query.filter_by(
+                    attachment_link=recipe_data["attachment"]
+                ).first()
+
+                if existing_attachment:
+
+                    # check if the image has been used by other recipe
+                    if existing_attachment.recipe_id != recipe.id:
+                        abort(403, "Attachment has been used by other recipe")
+
+                    if existing_attachment.attachment_link == recipe_data["attachment"]:
+                        recipe.attachment = existing_attachment.attachment_link
+
+                    else:
+                        AttachmentModel.query.filter_by(recipe_id=recipe.id).delete()
+
+                        new_attachment = AttachmentModel(
+                            recipe_id=recipe.id,
+                            attachment_link=recipe_data["attachment"],
+                        )
+
+                        new_attachment.add_attachment()
+                        recipe.attachment = new_attachment.attachment_link
+
+                else:
+                    new_attachment = AttachmentModel(
+                        recipe_id=recipe.id,
+                        attachment_link=recipe_data["attachment"],
+                    )
+
+                    new_attachment.add_attachment()
+                    recipe.attachment = new_attachment.attachment_link
+
+            # update nutrition
+            nutrition = NutritionModel.query.filter_by(
+                recipe_id=recipe_in_details_by_id
+            ).first()
+            nutrition.update_nutrition(recipe_data)
+
+            recipe.serving_per_container = find_serving_per_container(recipe.id)
+            recipe.serving_size = find_serving_size(recipe.id)
+            recipe.calories = find_calories(recipe.id)
+            recipe.total_fat = find_total_fat(recipe.id)
+            recipe.total_carbohydrate = find_total_carbohydrate(recipe.id)
+            recipe.total_sugar = find_total_sugar(recipe.id)
+            recipe.cholesterol = find_cholesterol(recipe.id)
+            recipe.protein = find_protein(recipe.id)
+            recipe.vitamin_d = find_vitamin_d(recipe.id)
+            recipe.sodium = find_sodium(recipe.id)
+            recipe.calcium = find_calcium(recipe.id)
+            recipe.potassium = find_potassium(recipe.id)
+            recipe.iron = find_iron(recipe.id)
 
             return RecipeSchema().dump(recipe), 200
 
@@ -447,6 +521,8 @@ class RecipeDelete(MethodView):
 
         try:
 
+            NutritionModel.query.filter_by(recipe_id=recipe.id).delete()
+            AttachmentModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeCategoryRelationModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeTypeRelationModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeOriginRelationModel.query.filter_by(recipe_id=recipe.id).delete()

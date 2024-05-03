@@ -122,7 +122,7 @@ class UserGetOwnProfile(MethodView):
 
     @jwt_required()
     @blp.response(200, schema=UserGetProfileSchema)
-    @cache.cached(timeout=60)
+    # @cache.cached(timeout=60)
     def get(self):
 
         try:
