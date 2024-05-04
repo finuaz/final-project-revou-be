@@ -3,10 +3,12 @@ from models import (
     TypeModel,
     OriginModel,
     TagModel,
+    IngredientModel,
     RecipeCategoryRelationModel,
     RecipeTypeRelationModel,
     RecipeOriginRelationModel,
     RecipeTagRelationModel,
+    RecipeIngredientRelationModel,
     AttachmentModel,
     NutritionModel,
 )
@@ -49,6 +51,23 @@ def find_tag(recipe_id):
     recipe_tags = RecipeTagRelationModel.query.filter_by(recipe_id=recipe_id).all()
     tags = [TagModel.query.get(recipe_tag.tag_id).tagname for recipe_tag in recipe_tags]
     return tags
+
+
+def find_ingredient(recipe_id):
+    ingredients = []
+    recipe_ingredients = RecipeIngredientRelationModel.query.filter_by(
+        recipe_id=recipe_id
+    ).all()
+
+    for recipe_ingredient in recipe_ingredients:
+        ingredient_member = []
+        ingredient_member.append(
+            IngredientModel.query.get(recipe_ingredient.ingredient_id).ingredient
+        )
+        ingredient_member.append(recipe_ingredient.amount)
+        ingredients.append(ingredient_member)
+
+    return ingredients
 
 
 def find_attachment(recipe_id):

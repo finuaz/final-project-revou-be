@@ -2,6 +2,22 @@ from marshmallow import Schema, fields
 from collections import OrderedDict
 
 
+# class IngredientListField(fields.Field):
+#     def _serialize(self, value, attr, obj, **kwargs):
+#         if value is None:
+#             return None
+#         return value
+
+#     def _deserialize(self, value, attr, data, **kwargs):
+#         if not isinstance(value, list):
+#             self.fail("invalid")
+
+#         if not all(isinstance(item, list) and len(item) == 2 for item in value):
+#             self.fail("invalid")
+
+#         return value
+
+
 class RecipeSchema(Schema):
     id = fields.Integer(dump_only=True)
     author_id = fields.Integer()
@@ -21,6 +37,9 @@ class RecipeSchema(Schema):
     tags = fields.List(fields.String())
 
     attachment = fields.String()
+
+    # Ingredient group
+    ingredients = fields.List(fields.List(fields.String()))
 
     # Nutrition group
     serving_per_container = fields.Integer()
@@ -44,6 +63,14 @@ class RecipeSchema(Schema):
 
     class Meta:
         ordered = True
+
+    def format_ingredients(self, obj):
+        ingredients_list = []
+        for ingredient_name, ingredient_unit in zip(
+            obj.ingredient_name, obj.ingredient_unit
+        ):
+            ingredients_list.append([ingredient_name, ingredient_unit])
+        return ingredients_list
 
 
 class RecipeImageSchema(Schema):

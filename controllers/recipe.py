@@ -52,6 +52,7 @@ from utils import (
     find_calcium,
     find_potassium,
     find_iron,
+    find_ingredient,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -207,6 +208,35 @@ class RecipeRegister(MethodView):
             recipe.potassium = nutrition.potassium
             recipe.iron = nutrition.iron
 
+            # add ingredients
+            if "ingredients" in recipe_data:
+                ingredients = recipe_data["ingredients"]
+                recipe.ingredients = []
+
+                for ingredient_member in ingredients:
+
+                    ingredient = IngredientModel.query.filter_by(
+                        ingredient=ingredient_member[0]
+                    ).first()
+
+                    if not ingredient:
+
+                        ingredient = IngredientModel(
+                            ingredient=ingredient_member[0],
+                            ingredient_image=None,
+                        )
+
+                        ingredient.add_ingredient()
+
+                    recipe_ingredient = RecipeIngredientRelationModel(
+                        recipe_id=recipe.id,
+                        ingredient_id=ingredient.id,
+                        amount=ingredient_member[1],
+                    )
+                    recipe_ingredient.add_recipe_ingredient()
+
+                    recipe.ingredients.append(ingredient_member)
+
         except IntegrityError:
             abort(400, message="recipe with that title already exists")
         except SQLAlchemyError as e:
@@ -246,6 +276,7 @@ class RecipeDetailsById(MethodView):
             recipe.calcium = find_calcium(recipe_in_details_by_id)
             recipe.potassium = find_potassium(recipe_in_details_by_id)
             recipe.iron = find_iron(recipe_in_details_by_id)
+            recipe.ingredients = find_ingredient(recipe_in_details_by_id)
 
             increment_view(recipe)
 
@@ -292,6 +323,7 @@ class RecipeDetailsByTitle(MethodView):
             recipe.calcium = find_calcium(recipe.id)
             recipe.potassium = find_potassium(recipe.id)
             recipe.iron = find_iron(recipe.id)
+            recipe.ingredients = find_ingredient(recipe.id)
 
             increment_view(recipe)
 
@@ -494,6 +526,40 @@ class RecipeUpdate(MethodView):
             recipe.potassium = find_potassium(recipe.id)
             recipe.iron = find_iron(recipe.id)
 
+            # update ingredient
+
+            for ingredient_data in recipe_data.get("ingredients", []):
+                ingredient, amount = ingredient_data
+
+                existing_ingredient = IngredientModel.query.filter_by(
+                    ingredient=ingredient
+                ).first()
+
+                if not existing_ingredient:
+                    ingredient = IngredientModel(
+                        ingredient=ingredient,
+                        ingredient_image=None,
+                    )
+
+                    ingredient.add_ingredient()
+
+                    recipe_ingredient = RecipeIngredientRelationModel(
+                        recipe_id=recipe.id,
+                        ingredient_id=ingredient.id,
+                        amount=amount,
+                    )
+                    recipe_ingredient.add_recipe_ingredient()
+
+                else:
+                    recipe_ingredient = RecipeIngredientRelationModel(
+                        recipe_id=recipe.id,
+                        ingredient_id=existing_ingredient.id,
+                        amount=amount,
+                    )
+
+                    recipe_ingredient.amount = amount
+                    db.session.commit()
+
             return RecipeSchema().dump(recipe), 200
 
         except Forbidden as e:
@@ -521,6 +587,7 @@ class RecipeDelete(MethodView):
 
         try:
 
+            RecipeIngredientRelationModel.query.filter_by(recipe_id=recipe.id).delete()
             NutritionModel.query.filter_by(recipe_id=recipe.id).delete()
             AttachmentModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeCategoryRelationModel.query.filter_by(recipe_id=recipe.id).delete()

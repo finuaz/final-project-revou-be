@@ -11,7 +11,8 @@ from .recipe import RecipeModel
 # from .instruction import InstructionModel
 from .recipe_attachment import AttachmentModel
 from .food_category import CategoryModel
-from .food_group import GroupModel
+
+# from .food_group import GroupModel
 from .food_origin import OriginModel
 from .food_type import TypeModel
 from .tag import TagModel
@@ -30,4 +31,5 @@ from .recipe_tag_relation import RecipeTagRelationModel
 
 # from .recipe_tool_relation import RecipeToolRelationModel
 from .recipe_type_relation import RecipeTypeRelationModel
-from .ingredient_group_relation import IngredientGroupRelationModel
+
+# from .ingredient_group_relation import IngredientGroupRelationModel

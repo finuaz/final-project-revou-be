@@ -18,6 +18,7 @@ from .recipe_helpers import (
     find_calcium,
     find_potassium,
     find_iron,
+    find_ingredient,
 )
 
 from .feed_helpers import (
