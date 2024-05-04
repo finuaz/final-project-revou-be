@@ -18,6 +18,8 @@ from controllers import (
     recipes_blueprint,
     user_socials_blueprint,
     feeds_blueprint,
+    likes_blueprint,
+    rates_blueprint,
 )
 
 
@@ -95,8 +97,9 @@ def create_app(is_test=False):
     api.register_blueprint(users_blueprint)
     api.register_blueprint(recipes_blueprint)
     api.register_blueprint(user_socials_blueprint)
-    # api.register_blueprint(instructions_blueprint)
     api.register_blueprint(feeds_blueprint)
+    api.register_blueprint(likes_blueprint)
+    api.register_blueprint(rates_blueprint)
 
     # logger
     logging.basicConfig(level=logging.ERROR)

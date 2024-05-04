@@ -26,11 +26,11 @@ from models import (
     RecipeIngredientRelationModel,
     AttachmentModel,
     NutritionModel,
+    LikeModel,
+    RateModel,
 )
 
-from schemas import (
-    RecipeSchema,
-)
+from schemas import RecipeSchema, RecipePlusPlusSchema
 
 from utils import (
     find_category,
@@ -246,7 +246,7 @@ class RecipeRegister(MethodView):
 
 @blp.route("/recipes/details/<int:recipe_in_details_by_id>")
 class RecipeDetailsById(MethodView):
-    @blp.response(201, RecipeSchema)
+    @blp.response(201, RecipePlusPlusSchema)
     def get(self, recipe_in_details_by_id):
         try:
             recipe = RecipeModel.query.filter_by(id=recipe_in_details_by_id).first()
@@ -278,6 +278,9 @@ class RecipeDetailsById(MethodView):
             recipe.iron = find_iron(recipe_in_details_by_id)
             recipe.ingredients = find_ingredient(recipe_in_details_by_id)
 
+            # recipe.likes = count_likes(recipe_in_details_by_id)
+            # recipe.rating = count_rating(recipe_in_details_by_id)
+
             increment_view(recipe)
 
             serialized_recipe = RecipeSchema().dump(recipe)
@@ -288,6 +291,17 @@ class RecipeDetailsById(MethodView):
         except Exception as e:
             current_app.logger.error(f"An unexpected error occurred: {str(e)}")
             abort(500, "Internal Server Error")
+
+
+# def count_likes(recipe_id):
+#     try:
+
+#         # likers = LikeModel.query.filter_by(recipe_id=recipe_id).first()
+
+#         return 0
+#     except SQLAlchemyError as e:
+#         current_app.logger.error(f"Database error: {str(e)}")
+#         abort(500, "Internal Server Error")
 
 
 @blp.route("/recipes/details/<string:recipe_in_details_by_title>")
