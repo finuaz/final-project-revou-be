@@ -13,6 +13,7 @@ class RecipeIngredientRelationModel(db.Model):
     ingredient_id = db.Column(
         db.Integer, db.ForeignKey("Ingredient.id"), primary_key=True, nullable=False
     )
+    amount = db.Column(db.String(20), nullable=True)
     created_at = db.Column(
         db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
     )
@@ -22,9 +23,10 @@ class RecipeIngredientRelationModel(db.Model):
         "IngredientModel", back_populates="recipe_ingredients"
     )
 
-    def __init__(self, recipe_id, ingredient_id):
+    def __init__(self, recipe_id, ingredient_id, amount="adequate"):
         self.recipe_id = recipe_id
         self.ingredient_id = ingredient_id
+        self.amount = amount
 
     def add_recipe_ingredient(self):
         try:

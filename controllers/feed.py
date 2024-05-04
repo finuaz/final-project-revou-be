@@ -62,7 +62,7 @@ class GetAllFeeds(MethodView):
 class GetAllFeeds(MethodView):
 
     @blp.response(200, RecipeSchema(many=True))
-    # @cache.cached(timeout=60 * 3)
+    @cache.cached(timeout=60 * 3)
     def get(self, recipe_category_in_search):
         try:
             category = CategoryModel.query.filter_by(

@@ -9,9 +9,8 @@ class IngredientModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     ingredient = db.Column(db.String(40), nullable=False)
-    unit = db.Column(db.String(10), nullable=False)
-    calories_per_unit = db.Column(db.DECIMAL(10, 2), nullable=True)
-    fat_per_unit = db.Column(db.DECIMAL(10, 2), nullable=True)
+    ingredient_image = db.Column(db.String, nullable=True)
+
     created_at = db.Column(
         db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
     )
@@ -25,15 +24,14 @@ class IngredientModel(db.Model):
     recipe_ingredients = db.relationship(
         "RecipeIngredientRelationModel", back_populates="ingredients"
     )
-    ingredient_groups = db.relationship(
-        "IngredientGroupRelationModel", back_populates="ingredients"
-    )
 
-    def __init__(self, ingredient, unit, calories_per_unit, fat_per_unit):
+    def __init__(
+        self,
+        ingredient,
+        ingredient_image=None,
+    ):
         self.ingredient = ingredient
-        self.unit = unit
-        self.calories_per_unit = calories_per_unit
-        self.fat_per_unit = fat_per_unit
+        self.ingredient_image = ingredient_image
 
     def add_ingredient(self):
         try:
