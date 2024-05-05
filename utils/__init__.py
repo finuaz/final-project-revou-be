@@ -28,4 +28,6 @@ from .feed_helpers import (
     find_all_origin,
     find_all_type,
     find_all_tag,
+    get_likes,
+    get_rating,
 )
