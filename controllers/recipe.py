@@ -53,6 +53,8 @@ from utils import (
     find_potassium,
     find_iron,
     find_ingredient,
+    get_likes,
+    get_rating,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -63,8 +65,9 @@ blp = Blueprint("recipes", __name__, description="Operations on recipes")
 
 @blp.route("/recipes/create")
 class RecipeRegister(MethodView):
+
     @blp.arguments(RecipeSchema)
-    @blp.response(201, RecipeSchema)
+    @blp.response(201, RecipePlusPlusSchema)
     @jwt_required()
     def post(self, recipe_data):
         current_user_id = get_jwt_identity()["id"]
@@ -237,6 +240,9 @@ class RecipeRegister(MethodView):
 
                     recipe.ingredients.append(ingredient_member)
 
+            recipe.like_count = get_likes(recipe.id)
+            recipe.rating = get_rating(recipe.id)
+
         except IntegrityError:
             abort(400, message="recipe with that title already exists")
         except SQLAlchemyError as e:
@@ -277,13 +283,12 @@ class RecipeDetailsById(MethodView):
             recipe.potassium = find_potassium(recipe_in_details_by_id)
             recipe.iron = find_iron(recipe_in_details_by_id)
             recipe.ingredients = find_ingredient(recipe_in_details_by_id)
-
-            # recipe.likes = count_likes(recipe_in_details_by_id)
-            # recipe.rating = count_rating(recipe_in_details_by_id)
+            recipe.like_count = get_likes(recipe_in_details_by_id)
+            recipe.rating = get_rating(recipe_in_details_by_id)
 
             increment_view(recipe)
 
-            serialized_recipe = RecipeSchema().dump(recipe)
+            serialized_recipe = RecipePlusPlusSchema().dump(recipe)
             return jsonify(serialized_recipe), 200
         except SQLAlchemyError as e:
             current_app.logger.error(f"Database error: {str(e)}")
@@ -293,21 +298,10 @@ class RecipeDetailsById(MethodView):
             abort(500, "Internal Server Error")
 
 
-# def count_likes(recipe_id):
-#     try:
-
-#         # likers = LikeModel.query.filter_by(recipe_id=recipe_id).first()
-
-#         return 0
-#     except SQLAlchemyError as e:
-#         current_app.logger.error(f"Database error: {str(e)}")
-#         abort(500, "Internal Server Error")
-
-
 @blp.route("/recipes/details/<string:recipe_in_details_by_title>")
 class RecipeDetailsByTitle(MethodView):
 
-    @blp.response(201, RecipeSchema)
+    @blp.response(201, RecipePlusPlusSchema)
     def get(self, recipe_in_details_by_title):
         try:
             recipe = RecipeModel.query.filter_by(
@@ -338,10 +332,12 @@ class RecipeDetailsByTitle(MethodView):
             recipe.potassium = find_potassium(recipe.id)
             recipe.iron = find_iron(recipe.id)
             recipe.ingredients = find_ingredient(recipe.id)
+            recipe.like_count = get_likes(recipe.id)
+            recipe.rating = get_rating(recipe.id)
 
             increment_view(recipe)
 
-            serialized_recipe = RecipeSchema().dump(recipe)
+            serialized_recipe = RecipePlusPlusSchema().dump(recipe)
             return jsonify(serialized_recipe), 200
         except SQLAlchemyError as e:
             current_app.logger.error(f"Database error: {str(e)}")
@@ -353,8 +349,9 @@ class RecipeDetailsByTitle(MethodView):
 
 @blp.route("/recipes/edit/<int:recipe_in_details_by_id>")
 class RecipeUpdate(MethodView):
+
     @blp.arguments(RecipeSchema)
-    @blp.response(201, RecipeSchema)
+    @blp.response(201, RecipePlusPlusSchema)
     @jwt_required()
     def put(self, recipe_data, recipe_in_details_by_id):
 
@@ -574,7 +571,10 @@ class RecipeUpdate(MethodView):
                     recipe_ingredient.amount = amount
                     db.session.commit()
 
-            return RecipeSchema().dump(recipe), 200
+            recipe.like_count = get_likes(recipe.id)
+            recipe.rating = get_rating(recipe.id)
+
+            return RecipePlusPlusSchema().dump(recipe), 200
 
         except Forbidden as e:
             abort(403, description=str(e))
@@ -601,6 +601,8 @@ class RecipeDelete(MethodView):
 
         try:
 
+            LikeModel.query.filter_by(recipe_id=recipe.id).delete()
+            RateModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeIngredientRelationModel.query.filter_by(recipe_id=recipe.id).delete()
             NutritionModel.query.filter_by(recipe_id=recipe.id).delete()
             AttachmentModel.query.filter_by(recipe_id=recipe.id).delete()

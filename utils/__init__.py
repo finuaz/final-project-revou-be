@@ -19,6 +19,8 @@ from .recipe_helpers import (
     find_potassium,
     find_iron,
     find_ingredient,
+    get_likes,
+    get_rating,
 )
 
 from .feed_helpers import (

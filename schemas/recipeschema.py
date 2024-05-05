@@ -42,6 +42,9 @@ class RecipeSchema(Schema):
     potassium = fields.Decimal(places=2, rounding=None)
     iron = fields.Decimal(places=2, rounding=None)
 
+    # likes = fields.Integer()
+    # rating = fields.Decimal(places=2, rounding=None)
+
     created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
 
@@ -89,8 +92,10 @@ class RecipePlusPlusSchema(Schema):
     potassium = fields.Decimal(places=2, rounding=None)
     iron = fields.Decimal(places=2, rounding=None)
 
-    likes = fields.Integer()
-    rating = fields.Decimal(places=2, rounding=None)
+    # likes = fields.String()
+    like_count = fields.Integer()
+
+    rating = fields.Decimal(rounding=None)
 
     created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
