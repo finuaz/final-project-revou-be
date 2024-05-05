@@ -18,13 +18,15 @@ from models import (
     RecipeTagRelationModel,
     TagModel,
 )
-from schemas import RecipeSchema
+from schemas import RecipeSchema, RecipePlusPlusSchema
 
 from utils import (
     find_all_category,
     find_all_type,
     find_all_origin,
     find_all_tag,
+    get_likes,
+    get_rating,
 )
 
 blp = Blueprint("feeds", __name__, description="Operations on feeds")
@@ -33,8 +35,8 @@ blp = Blueprint("feeds", __name__, description="Operations on feeds")
 @blp.route("/feeds/recipes/all")
 class GetAllFeeds(MethodView):
 
-    @blp.response(200, RecipeSchema(many=True))
-    # @cache.cached(timeout=60 * 3)
+    @blp.response(200, RecipePlusPlusSchema(many=True))
+    @cache.cached(timeout=60 * 3)
     def get(self):
         try:
             recipes = RecipeModel.query.all()
@@ -46,8 +48,10 @@ class GetAllFeeds(MethodView):
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
                 recipe.tags = find_all_tag(recipe.id)
+                recipe.like_count = get_likes(recipe.id)
+                recipe.rating = get_rating(recipe.id)
 
-            serialized_recipes = RecipeSchema(many=True).dump(recipes)
+            serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
 
         except SQLAlchemyError as e:
@@ -61,7 +65,7 @@ class GetAllFeeds(MethodView):
 @blp.route("/feeds/recipes/filter-by/category/<string:recipe_category_in_search>")
 class GetAllFeeds(MethodView):
 
-    @blp.response(200, RecipeSchema(many=True))
+    @blp.response(200, RecipePlusPlusSchema(many=True))
     @cache.cached(timeout=60 * 3)
     def get(self, recipe_category_in_search):
         try:
@@ -88,8 +92,10 @@ class GetAllFeeds(MethodView):
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
                 recipe.tags = find_all_tag(recipe.id)
+                recipe.like_count = get_likes(recipe.id)
+                recipe.rating = get_rating(recipe.id)
 
-            serialized_recipes = RecipeSchema(many=True).dump(recipes)
+            serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
 
         except SQLAlchemyError as e:
@@ -103,8 +109,8 @@ class GetAllFeeds(MethodView):
 @blp.route("/feeds/recipes/filter-by/type/<string:recipe_type_in_search>")
 class GetAllFeeds(MethodView):
 
-    @blp.response(200, RecipeSchema(many=True))
-    # @cache.cached(timeout=60 * 3)
+    @blp.response(200, RecipePlusPlusSchema(many=True))
+    @cache.cached(timeout=60 * 3)
     def get(self, recipe_type_in_search):
         try:
             type = TypeModel.query.filter_by(type=recipe_type_in_search).first()
@@ -128,8 +134,10 @@ class GetAllFeeds(MethodView):
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
                 recipe.tags = find_all_tag(recipe.id)
+                recipe.like_count = get_likes(recipe.id)
+                recipe.rating = get_rating(recipe.id)
 
-            serialized_recipes = RecipeSchema(many=True).dump(recipes)
+            serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
 
         except SQLAlchemyError as e:
@@ -143,7 +151,7 @@ class GetAllFeeds(MethodView):
 @blp.route("/feeds/recipes/filter-by/origin/<string:recipe_origin_in_search>")
 class GetAllFeeds(MethodView):
 
-    @blp.response(200, RecipeSchema(many=True))
+    @blp.response(200, RecipePlusPlusSchema(many=True))
     # @cache.cached(timeout=60 * 3)
     def get(self, recipe_origin_in_search):
         try:
@@ -168,8 +176,10 @@ class GetAllFeeds(MethodView):
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
                 recipe.tags = find_all_tag(recipe.id)
+                recipe.like_count = get_likes(recipe.id)
+                recipe.rating = get_rating(recipe.id)
 
-            serialized_recipes = RecipeSchema(many=True).dump(recipes)
+            serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
 
         except SQLAlchemyError as e:
@@ -183,7 +193,7 @@ class GetAllFeeds(MethodView):
 @blp.route("/feeds/recipes/filter-by/tag/<string:recipe_tag_in_search>")
 class GetAllFeeds(MethodView):
 
-    @blp.response(200, RecipeSchema(many=True))
+    @blp.response(200, RecipePlusPlusSchema(many=True))
     # @cache.cached(timeout=60 * 3)
     def get(self, recipe_tag_in_search):
         try:
@@ -206,8 +216,10 @@ class GetAllFeeds(MethodView):
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
                 recipe.tags = find_all_tag(recipe.id)
+                recipe.like_count = get_likes(recipe.id)
+                recipe.rating = get_rating(recipe.id)
 
-            serialized_recipes = RecipeSchema(many=True).dump(recipes)
+            serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
 
         except SQLAlchemyError as e:
