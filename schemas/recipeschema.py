@@ -1,6 +1,19 @@
 from marshmallow import Schema, fields
 from collections import OrderedDict
 
+# from models import UserModel
+
+# from schemas import CommentSchema
+
+
+class CommentSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    user_id = fields.Integer()
+    recipe_id = fields.Integer()
+    message = fields.String()
+    created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+    updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+
 
 class RecipeSchema(Schema):
     id = fields.Integer(dump_only=True)
@@ -92,10 +105,9 @@ class RecipePlusPlusSchema(Schema):
     potassium = fields.Decimal(places=2, rounding=None)
     iron = fields.Decimal(places=2, rounding=None)
 
-    # likes = fields.String()
     like_count = fields.Integer()
-
     rating = fields.Decimal(rounding=None)
+    comments = fields.List(fields.Nested(CommentSchema), many=True)
 
     created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")

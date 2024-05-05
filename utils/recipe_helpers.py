@@ -13,6 +13,8 @@ from models import (
     NutritionModel,
     LikeModel,
     RateModel,
+    CommentModel,
+    UserModel,
 )
 
 from db import db
@@ -193,3 +195,27 @@ def get_rating(recipe_id):
 
     avg_rate = total_value / len(rates)
     return avg_rate
+
+
+# def get_comments(recipe_id):
+#     comments = []
+#     recipe_comments = CommentModel.query.filter_by(recipe_id=recipe_id).all()
+
+#     if not recipe_comments:
+#         return comments
+
+#     for comment in recipe_comments:
+#         comment_member = []
+#         commenter = UserModel.query.filter_by(id=comment.user_id).first()
+#         commenter_name = commenter.first_name + " " + commenter.last_name
+
+#         comment_member.append(commenter_name)
+#         comment_member.append(comment.message)
+#         comments.append(comment_member)
+
+#     return comments
+
+
+def get_comments(recipe_id):
+    comments = CommentModel.query.filter_by(recipe_id=recipe_id).all()
+    return comments

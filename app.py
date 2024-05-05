@@ -20,6 +20,7 @@ from controllers import (
     feeds_blueprint,
     likes_blueprint,
     rates_blueprint,
+    comments_blueprint,
 )
 
 
@@ -100,6 +101,7 @@ def create_app(is_test=False):
     api.register_blueprint(feeds_blueprint)
     api.register_blueprint(likes_blueprint)
     api.register_blueprint(rates_blueprint)
+    api.register_blueprint(comments_blueprint)
 
     # logger
     logging.basicConfig(level=logging.ERROR)
