@@ -11,6 +11,8 @@ from models import (
     RecipeIngredientRelationModel,
     AttachmentModel,
     NutritionModel,
+    LikeModel,
+    RateModel,
 )
 
 from db import db
@@ -173,3 +175,21 @@ def find_iron(recipe_id):
 def increment_view(recipe):
     recipe.view_count += 1
     db.session.commit()
+
+
+def get_likes(recipe_id):
+    like_count = LikeModel.query.filter_by(recipe_id=recipe_id).count()
+    return like_count
+
+
+def get_rating(recipe_id):
+    rates = RateModel.query.filter_by(recipe_id=recipe_id).all()
+    total_value = 0
+    for rate in rates:
+        total_value += rate.value
+
+    if not rates:
+        return 0.0
+
+    avg_rate = total_value / len(rates)
+    return avg_rate

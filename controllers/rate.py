@@ -66,7 +66,10 @@ class RecipeRate(MethodView):
 
             rate.add_rate()
 
-            return jsonify(rate.serialize())
+            rate.value = rate.value
+
+            serialized_rate = RateSchema().dump(rate)
+            return jsonify(serialized_rate), 200
 
         except IntegrityError:
             abort(400, message="recipe with that title already exists")
