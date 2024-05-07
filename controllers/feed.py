@@ -1,3 +1,4 @@
+import logging
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
@@ -30,6 +31,8 @@ from utils import (
     find_attachment,
     chef_recipe_check,
 )
+
+logging.basicConfig(level=logging.INFO)
 
 blp = Blueprint("feeds", __name__, description="Operations on feeds")
 

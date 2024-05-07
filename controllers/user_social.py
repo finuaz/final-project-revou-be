@@ -1,3 +1,4 @@
+import logging
 from flask.views import MethodView
 from flask_jwt_extended import (
     get_jwt,
@@ -19,6 +20,8 @@ from schemas import (
     UserInstagramSchema,
     UserTiktokSchema,
 )
+
+logging.basicConfig(level=logging.INFO)
 
 blp = Blueprint(
     "user_socials", __name__, description="Operations on user social medias"

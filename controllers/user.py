@@ -1,3 +1,4 @@
+import logging
 from flask.views import MethodView
 from flask_jwt_extended import (
     get_jwt,
@@ -27,6 +28,8 @@ from schemas import (
     UserDeletionSchema,
     UserGetFollowingFollower,
 )
+
+logging.basicConfig(level=logging.INFO)
 
 blp = Blueprint("users", __name__, description="Operations on users")
 

@@ -29,7 +29,6 @@ from models import (
     LikeModel,
     RateModel,
     CommentModel,
-    UserModel,
 )
 
 from schemas import RecipeSchema, RecipePlusPlusSchema, CommentSchema
