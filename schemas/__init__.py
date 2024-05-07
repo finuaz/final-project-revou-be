@@ -6,6 +6,8 @@ from .userschema import (
     UserUpdateImageSchema,
     UserResetPasswordSchema,
     UserDeletionSchema,
+    UserFollowingSchema,
+    UserGetFollowingFollower,
 )
 
 from .recipeschema import (

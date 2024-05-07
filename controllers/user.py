@@ -12,10 +12,11 @@ from flask import jsonify, current_app
 from passlib.hash import pbkdf2_sha512
 from extensions import cache
 
+from utils import count_following, count_follower
 
 from werkzeug.exceptions import Forbidden
 
-from models import UserModel
+from models import UserModel, FollowingModel
 from schemas import (
     UserRegisterSchema,
     UserLoginSchema,
@@ -24,6 +25,7 @@ from schemas import (
     UserUpdateImageSchema,
     UserResetPasswordSchema,
     UserDeletionSchema,
+    UserGetFollowingFollower,
 )
 
 blp = Blueprint("users", __name__, description="Operations on users")
@@ -121,7 +123,7 @@ class UserLogin(MethodView):
 class UserGetOwnProfile(MethodView):
 
     @jwt_required()
-    @blp.response(200, schema=UserGetProfileSchema)
+    @blp.response(200, UserGetProfileSchema)
     # @cache.cached(timeout=60)
     def get(self):
 
@@ -130,6 +132,9 @@ class UserGetOwnProfile(MethodView):
             user = UserModel.query.filter_by(id=current_user_id).first()
             if not user:
                 abort(404, "User not found")
+
+            user.total_following = count_following(user.id)
+            user.total_follower = count_follower(user.id)
 
             serialized_user = UserGetProfileSchema().dump(user)
             return jsonify(serialized_user), 200
@@ -154,6 +159,9 @@ class GetProfileByUsername(MethodView):
             if not user:
                 abort(404, "User not found")
 
+            user.total_following = count_following(user.id)
+            user.total_follower = count_follower(user.id)
+
             serialized_user = UserGetProfileSchema().dump(user)
             return jsonify(serialized_user), 200
         except SQLAlchemyError as e:
@@ -176,6 +184,9 @@ class GetProfileById(MethodView):
 
             if not user:
                 abort(404, "User not found")
+
+            user.total_following = count_following(user.id)
+            user.total_follower = count_follower(user.id)
 
             serialized_user = UserGetProfileSchema().dump(user)
             return jsonify(serialized_user), 200
@@ -279,6 +290,8 @@ class UserDelete(MethodView):
         if user and pbkdf2_sha512.verify(user_data["password"], user.password):
             try:
 
+                FollowingModel.query.filter_by(follower_id=user_id).delete()
+                FollowingModel.query.filter_by(followed_id=user_id).delete()
                 user.delete_user()
                 return jsonify({"message": "your user has been deleted"}), 200
 

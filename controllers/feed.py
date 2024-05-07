@@ -67,7 +67,7 @@ class GetAllFeeds(MethodView):
 
 
 @blp.route("/feeds/recipes/filter-by/category/<string:recipe_category_in_search>")
-class GetAllFeeds(MethodView):
+class GetFeedsByCategory(MethodView):
 
     @blp.response(200, RecipePlusPlusSchema(many=True))
     @cache.cached(timeout=60 * 3)
@@ -113,7 +113,7 @@ class GetAllFeeds(MethodView):
 
 
 @blp.route("/feeds/recipes/filter-by/type/<string:recipe_type_in_search>")
-class GetAllFeeds(MethodView):
+class GetFeedsByType(MethodView):
 
     @blp.response(200, RecipePlusPlusSchema(many=True))
     @cache.cached(timeout=60 * 3)
@@ -157,7 +157,7 @@ class GetAllFeeds(MethodView):
 
 
 @blp.route("/feeds/recipes/filter-by/origin/<string:recipe_origin_in_search>")
-class GetAllFeeds(MethodView):
+class GetFeedsByOrigin(MethodView):
 
     @blp.response(200, RecipePlusPlusSchema(many=True))
     # @cache.cached(timeout=60 * 3)
@@ -201,7 +201,7 @@ class GetAllFeeds(MethodView):
 
 
 @blp.route("/feeds/recipes/filter-by/tag/<string:recipe_tag_in_search>")
-class GetAllFeeds(MethodView):
+class GetFeedsByTag(MethodView):
 
     @blp.response(200, RecipePlusPlusSchema(many=True))
     # @cache.cached(timeout=60 * 3)

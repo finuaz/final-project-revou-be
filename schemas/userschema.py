@@ -35,8 +35,16 @@ class UserGetProfileSchema(Schema):
     role = EnumField(UserRole, by_value=True)
     bio = fields.String()
     phone = fields.String()
-    phone = fields.String()
     location = fields.String()
+    total_following = fields.Integer()
+    total_follower = fields.Integer()
+    created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+    updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+
+
+class UserGetFollowingFollower(Schema):
+    following = fields.Integer()
+    follower = fields.Integer()
 
 
 class UserUpdateInfoSchema(Schema):
@@ -67,3 +75,11 @@ class UserResetPasswordSchema(Schema):
 class UserDeletionSchema(Schema):
     id = fields.Integer(dump_only=True)
     password = fields.String(required=True)
+
+
+class UserFollowingSchema(Schema):
+    id = fields.Integer(dump_only=True)
+    follower_id = fields.Integer(required=True)
+    followed_id = fields.Integer(required=True)
+    created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
+    updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
