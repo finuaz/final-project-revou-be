@@ -55,14 +55,8 @@ class RecipeSchema(Schema):
     potassium = fields.Decimal(places=2, rounding=None)
     iron = fields.Decimal(places=2, rounding=None)
 
-    # likes = fields.Integer()
-    # rating = fields.Decimal(places=2, rounding=None)
-
     created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
-
-    # class Meta:
-    #     ordered = True
 
 
 class RecipePlusPlusSchema(Schema):
@@ -108,6 +102,8 @@ class RecipePlusPlusSchema(Schema):
     like_count = fields.Integer()
     rating = fields.Decimal(rounding=None)
     comments = fields.List(fields.Nested(CommentSchema), many=True)
+
+    is_chef_recipe = fields.Boolean()
 
     created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")

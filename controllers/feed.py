@@ -28,6 +28,7 @@ from utils import (
     get_likes,
     get_rating,
     find_attachment,
+    chef_recipe_check,
 )
 
 blp = Blueprint("feeds", __name__, description="Operations on feeds")
@@ -52,6 +53,7 @@ class GetAllFeeds(MethodView):
                 recipe.like_count = get_likes(recipe.id)
                 recipe.rating = get_rating(recipe.id)
                 recipe.attachment = find_attachment(recipe.id)
+                recipe.is_chef_recipe = chef_recipe_check(recipe.id)
 
             serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
@@ -97,6 +99,7 @@ class GetAllFeeds(MethodView):
                 recipe.like_count = get_likes(recipe.id)
                 recipe.rating = get_rating(recipe.id)
                 recipe.attachment = find_attachment(recipe.id)
+                recipe.is_chef_recipe = chef_recipe_check(recipe.id)
 
             serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
@@ -140,6 +143,7 @@ class GetAllFeeds(MethodView):
                 recipe.like_count = get_likes(recipe.id)
                 recipe.rating = get_rating(recipe.id)
                 recipe.attachment = find_attachment(recipe.id)
+                recipe.is_chef_recipe = chef_recipe_check(recipe.id)
 
             serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
@@ -183,6 +187,7 @@ class GetAllFeeds(MethodView):
                 recipe.like_count = get_likes(recipe.id)
                 recipe.rating = get_rating(recipe.id)
                 recipe.attachment = find_attachment(recipe.id)
+                recipe.is_chef_recipe = chef_recipe_check(recipe.id)
 
             serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
@@ -224,6 +229,7 @@ class GetAllFeeds(MethodView):
                 recipe.like_count = get_likes(recipe.id)
                 recipe.rating = get_rating(recipe.id)
                 recipe.attachment = find_attachment(recipe.id)
+                recipe.is_chef_recipe = chef_recipe_check(recipe.id)
 
             serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200

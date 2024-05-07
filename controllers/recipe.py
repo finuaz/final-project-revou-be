@@ -58,6 +58,7 @@ from utils import (
     get_likes,
     get_rating,
     get_comments,
+    chef_recipe_check,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -245,6 +246,7 @@ class RecipeRegister(MethodView):
 
             recipe.like_count = get_likes(recipe.id)
             recipe.rating = get_rating(recipe.id)
+            recipe.is_chef_recipe = chef_recipe_check(recipe.id)
 
         except IntegrityError:
             abort(400, message="recipe with that title already exists")
@@ -269,6 +271,10 @@ class RecipeDetailsById(MethodView):
             recipe.tags = find_tag(recipe_in_details_by_id)
             recipe.attachment = find_attachment(recipe_in_details_by_id)
 
+            # ingredient and chef recipe
+            recipe.ingredients = find_ingredient(recipe_in_details_by_id)
+            recipe.is_chef_recipe = chef_recipe_check(recipe_in_details_by_id)
+
             # find nutrition data
             recipe.serving_per_container = find_serving_per_container(
                 recipe_in_details_by_id
@@ -285,7 +291,8 @@ class RecipeDetailsById(MethodView):
             recipe.calcium = find_calcium(recipe_in_details_by_id)
             recipe.potassium = find_potassium(recipe_in_details_by_id)
             recipe.iron = find_iron(recipe_in_details_by_id)
-            recipe.ingredients = find_ingredient(recipe_in_details_by_id)
+
+            # like, rate, comment
             recipe.like_count = get_likes(recipe_in_details_by_id)
             recipe.rating = get_rating(recipe_in_details_by_id)
             recipe.comments = get_comments(recipe_in_details_by_id)
@@ -306,25 +313,6 @@ class RecipeDetailsById(MethodView):
             abort(500, "Internal Server Error")
 
 
-# def get_comments(recipe_id):
-#     comments = []
-#     recipe_comments = CommentModel.query.filter_by(recipe_id=recipe_id).all()
-
-#     if not recipe_comments:
-#         return comments
-
-#     for comment in recipe_comments:
-#         comment_member = []
-#         commenter = UserModel.query.filter_by(id=comment.user_id).first()
-#         commenter_name = commenter.first_name + " " + commenter.last_name
-
-#         comment_member.append(commenter_name)
-#         comment_member.append(comment.message)
-#         comments.append(comment_member)
-
-#     return comments
-
-
 @blp.route("/recipes/details/<string:recipe_in_details_by_title>")
 class RecipeDetailsByTitle(MethodView):
 
@@ -337,12 +325,16 @@ class RecipeDetailsByTitle(MethodView):
             if not recipe:
                 abort(404, "Recipe not found")
 
-            # finding category, type, origin, tag
+            # finding category, type, origin, tag, attachment
             recipe.categories = find_category(recipe.id)
             recipe.type = find_type(recipe.id)
             recipe.origin = find_origin(recipe.id)
             recipe.tags = find_tag(recipe.id)
             recipe.attachment = find_attachment(recipe.id)
+
+            # ingredient and chef recipe
+            recipe.ingredients = find_ingredient(recipe.id)
+            recipe.is_chef_recipe = chef_recipe_check(recipe.id)
 
             # find nutrition data
             recipe.serving_per_container = find_serving_per_container(recipe.id)
@@ -358,7 +350,8 @@ class RecipeDetailsByTitle(MethodView):
             recipe.calcium = find_calcium(recipe.id)
             recipe.potassium = find_potassium(recipe.id)
             recipe.iron = find_iron(recipe.id)
-            recipe.ingredients = find_ingredient(recipe.id)
+
+            # like, rate, comment
             recipe.like_count = get_likes(recipe.id)
             recipe.rating = get_rating(recipe.id)
             recipe.comments = get_comments(recipe.id)
