@@ -2,6 +2,7 @@ from db import db
 from flask_smorest import abort
 import logging
 from sqlalchemy import func
+from flask import jsonify
 
 
 class CategoryModel(db.Model):
@@ -40,7 +41,10 @@ class CategoryModel(db.Model):
         category = cls.query.filter_by(id=category_id).first()
         if category is None:
             logging.error(f"Category with id {category_id} not found.")
-            abort(404, f"Category with id {category_id} not found.")
+            return (
+                jsonify({"message", "category with id {category_id} not found."}),
+                404,
+            )
         return category
 
     def update_category(self, category_data):

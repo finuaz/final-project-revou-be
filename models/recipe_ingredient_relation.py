@@ -2,6 +2,7 @@ from db import db
 from flask_smorest import abort
 import logging
 from sqlalchemy import func
+from flask import jsonify
 
 
 class RecipeIngredientRelationModel(db.Model):
@@ -42,7 +43,15 @@ class RecipeIngredientRelationModel(db.Model):
             logging.error(
                 f"recipe_ingredient with id {recipe_ingredient_id} not found."
             )
-            abort(404, f"recipe_ingredient with id {recipe_ingredient_id} not found.")
+            return (
+                jsonify(
+                    {
+                        "message",
+                        "recipe ingredient with id {recipe_ingredient_id} not found.",
+                    }
+                ),
+                404,
+            )
         return recipe_ingredient
 
     def update_recipe_ingredient(self, recipe_ingredient_data):

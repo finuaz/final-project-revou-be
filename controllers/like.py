@@ -7,20 +7,14 @@ from flask_jwt_extended import (
 )
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from flask import jsonify, current_app
-from db import db
+from flask import jsonify
 
-from werkzeug.exceptions import Forbidden
-
-from models import RecipeModel, UserModel, LikeModel
-
+from models import RecipeModel, LikeModel
 from schemas import (
     LikeSchema,
 )
 
-
 logging.basicConfig(level=logging.INFO)
-
 
 blp = Blueprint("likes", __name__, description="Operations on likes")
 
@@ -56,14 +50,20 @@ class RecipeUnlike(MethodView):
             recipe = RecipeModel.query.filter_by(id=recipe_in_search).first()
 
             if not recipe:
-                abort(404, message=f"The recipe does not exist")
+                return (
+                    jsonify({"message", "The recipe does not exist"}),
+                    404,
+                )
 
             like_exist = LikeModel.query.filter_by(
                 user_id=current_user_id, recipe_id=recipe_in_search
             ).first()
 
             if not like_exist:
-                abort(404, message="You haven't liked this recipe yet")
+                return (
+                    jsonify({"message", "You haven't liked this recipe yet"}),
+                    403,
+                )
 
             like_exist.delete_like()
 

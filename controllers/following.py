@@ -7,23 +7,17 @@ from flask_jwt_extended import (
 )
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from flask import jsonify, current_app
-from db import db
-
-from werkzeug.exceptions import Forbidden
+from flask import jsonify
 
 from models import (
     UserModel,
     FollowingModel,
 )
-
 from schemas import (
     UserFollowingSchema,
 )
 
-
 logging.basicConfig(level=logging.INFO)
-
 
 blp = Blueprint("following", __name__, description="Operations on following")
 

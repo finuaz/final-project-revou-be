@@ -1,10 +1,8 @@
 import logging
+
 from flask.views import MethodView
 from flask_jwt_extended import (
-    get_jwt,
     get_jwt_identity,
-    create_access_token,
-    create_refresh_token,
     jwt_required,
 )
 from flask_smorest import Blueprint, abort

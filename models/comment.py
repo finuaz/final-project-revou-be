@@ -3,6 +3,7 @@ from flask_smorest import abort
 import logging
 from sqlalchemy import func
 from models import UserModel
+from flask import jsonify
 
 
 class CommentModel(db.Model):
@@ -44,7 +45,8 @@ class CommentModel(db.Model):
         comment = cls.query.filter_by(id=comment_id).first()
         if comment is None:
             logging.error(f"comment with id {comment_id} not found.")
-            abort(404, f"comment with id {comment_id} not found.")
+            return jsonify({"message", "comment with id {comment_id} not found."}), 404
+
         return comment
 
     def update_comment(self, comment_data):

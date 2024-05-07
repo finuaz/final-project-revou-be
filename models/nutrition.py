@@ -2,6 +2,7 @@ from db import db
 from flask_smorest import abort
 import logging
 from sqlalchemy import func
+from flask import jsonify
 
 
 class NutritionModel(db.Model):
@@ -81,7 +82,10 @@ class NutritionModel(db.Model):
         nutrition = cls.query.filter_by(id=nutrition_id).first()
         if nutrition is None:
             logging.error(f"nutrition with id {nutrition_id} not found.")
-            abort(404, f"nutrition with id {nutrition_id} not found.")
+            return (
+                jsonify({"message", "nutrition with id {nutrition_id} not found."}),
+                404,
+            )
         return nutrition
 
     def update_nutrition(self, nutrition_data):

@@ -2,6 +2,7 @@ from db import db
 from flask_smorest import abort
 import logging
 from sqlalchemy import func
+from flask import jsonify
 
 
 class SocialModel(db.Model):
@@ -42,7 +43,7 @@ class SocialModel(db.Model):
         user = cls.query.filter_by(id=user_id).first()
         if user is None:
             logging.error(f"User social with id {user_id} not found.")
-            abort(404, f"User social with id {user_id} not found.")
+            return jsonify({"message", "user social with id {user_id} not found."}), 404
         return user
 
     def update_user_social(self, platform):
