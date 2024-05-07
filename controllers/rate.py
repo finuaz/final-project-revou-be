@@ -7,21 +7,14 @@ from flask_jwt_extended import (
 )
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from flask import jsonify, current_app, request
-from db import db
+from flask import jsonify, request
 
-from werkzeug.exceptions import Forbidden
-
-from models import RecipeModel, UserModel, RateModel
-
-
+from models import RecipeModel, RateModel
 from schemas import (
     RateSchema,
 )
 
-
 logging.basicConfig(level=logging.INFO)
-
 
 blp = Blueprint("rates", __name__, description="Operations on rates")
 
@@ -40,10 +33,16 @@ class RecipeRate(MethodView):
             recipe = RecipeModel.query.filter_by(id=recipe_in_search).first()
 
             if not recipe:
-                abort(404, message="Recipe not found")
+                return (
+                    jsonify({"message", "The recipe does not exist"}),
+                    404,
+                )
 
             if not rate_value:
-                abort(400, message="rate value is required")
+                return (
+                    jsonify({"message", "The rate value is required"}),
+                    404,
+                )
 
             if existing_rate:
 
@@ -88,14 +87,20 @@ class RecipeUnrate(MethodView):
             recipe = RecipeModel.query.filter_by(id=recipe_in_search).first()
 
             if not recipe:
-                abort(404, message=f"The recipe does not exist")
+                return (
+                    jsonify({"message", "The recipe does not exist"}),
+                    404,
+                )
 
             rate_exist = RateModel.query.filter_by(
                 user_id=current_user_id, recipe_id=recipe_in_search
             ).first()
 
             if not rate_exist:
-                abort(404, message="You haven't rated this recipe yet")
+                return (
+                    jsonify({"message", "You have not rated this recipe yet"}),
+                    404,
+                )
 
             rate_exist.delete_rate()
 

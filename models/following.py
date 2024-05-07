@@ -2,6 +2,7 @@ from db import db
 from flask_smorest import abort
 import logging
 from sqlalchemy import func
+from flask import jsonify
 
 
 class FollowingModel(db.Model):
@@ -49,7 +50,10 @@ class FollowingModel(db.Model):
         following = cls.query.filter_by(id=following_id).first()
         if following is None:
             logging.error(f"following with id {following_id} not found.")
-            abort(404, f"following with id {following_id} not found.")
+            return (
+                jsonify({"message", "following with id {following_id} not found."}),
+                404,
+            )
         return following
 
     def update_following(self, following_data):

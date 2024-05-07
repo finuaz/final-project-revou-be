@@ -7,21 +7,13 @@ from flask_jwt_extended import (
 )
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
-from flask import jsonify, current_app, request
-from db import db
+from flask import jsonify, request
 
-from werkzeug.exceptions import Forbidden
-
-from models import RecipeModel, UserModel, CommentModel
-
+from models import RecipeModel, CommentModel
+from schemas import CommentSchema
 from utils import get_comments
 
-
-from schemas import CommentSchema, RecipeSchema, RecipePlusPlusSchema
-
-
 logging.basicConfig(level=logging.INFO)
-
 
 blp = Blueprint("comments", __name__, description="Operations on comments")
 
@@ -34,31 +26,14 @@ class AddCommentToRecipe(MethodView):
         try:
             current_user_id = get_jwt_identity()["id"]
             comment_message = request.json.get("message")
-            # existing_comment = CommentModel.query.filter_by(
-            #     recipe_id=recipe_in_search, user_id=current_user_id
-            # ).first()
+
             recipe = RecipeModel.query.filter_by(id=recipe_in_search).first()
 
             if not recipe:
-                abort(404, message="Recipe not found")
+                return jsonify({"message", "Recipe is not found"}), 404
 
             if not comment_message:
-                abort(400, message="comment message is required")
-
-            # if existing_comment:
-
-            #     existing_comment.message = comment_message
-            #     existing_comment.update_comment(
-            #         comment_data={"message": comment_message}
-            #     )
-
-            #     response_data = {
-            #         "id": existing_comment.id,
-            #         "user_id": existing_comment.user_id,
-            #         "recipe_id": existing_comment.recipe_id,
-            #         "message": existing_comment.message,
-            #     }
-            #     return jsonify(response_data)
+                return jsonify({"message", "Comment message is required"}), 403
 
             comment = CommentModel(
                 recipe_id=recipe_in_search,
@@ -95,7 +70,7 @@ class UpdateCommentOnRecipe(MethodView):
             recipe = RecipeModel.query.filter_by(id=recipe_in_search).first()
 
             if not recipe:
-                abort(404, message="Recipe not found")
+                return jsonify({"message", "Recipe is not found"}), 404
 
             if existing_comment.user_id != current_user_id:
                 return (
@@ -104,7 +79,7 @@ class UpdateCommentOnRecipe(MethodView):
                 )
 
             if not comment_message:
-                abort(400, message="comment message is required")
+                return jsonify({"message", "Comment message is required"}), 403
 
             if not existing_comment:
                 return jsonify({"message": "the comment is not found"}), 404

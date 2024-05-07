@@ -22,6 +22,7 @@ from controllers import (
     rates_blueprint,
     comments_blueprint,
     following_blueprint,
+    collentions_blueprint,
 )
 
 
@@ -104,6 +105,7 @@ def create_app(is_test=False):
     api.register_blueprint(rates_blueprint)
     api.register_blueprint(comments_blueprint)
     api.register_blueprint(following_blueprint)
+    api.register_blueprint(collentions_blueprint)
 
     # logger
     logging.basicConfig(level=logging.ERROR)

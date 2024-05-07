@@ -2,6 +2,7 @@ from db import db
 from flask_smorest import abort
 import logging
 from sqlalchemy import func
+from flask import jsonify
 
 
 class AttachmentModel(db.Model):
@@ -38,7 +39,10 @@ class AttachmentModel(db.Model):
         attachment = cls.query.filter_by(id=attachment_id).first()
         if attachment is None:
             logging.error(f"attachment with id {attachment_id} not found.")
-            abort(404, f"attachment with id {attachment_id} not found.")
+            return (
+                jsonify({"message", "attachment with id {attachment_id} not found."}),
+                404,
+            )
         return attachment
 
     def update_attachment(self, attachment_data):

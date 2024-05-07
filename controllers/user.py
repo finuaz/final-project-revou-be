@@ -1,3 +1,5 @@
+import logging
+
 from flask.views import MethodView
 from flask_jwt_extended import (
     get_jwt,
@@ -11,9 +13,6 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask import jsonify, current_app
 from passlib.hash import pbkdf2_sha512
 from extensions import cache
-
-from utils import count_following, count_follower
-
 from werkzeug.exceptions import Forbidden
 
 from models import UserModel, FollowingModel
@@ -25,8 +24,10 @@ from schemas import (
     UserUpdateImageSchema,
     UserResetPasswordSchema,
     UserDeletionSchema,
-    UserGetFollowingFollower,
 )
+from utils import count_following, count_follower
+
+logging.basicConfig(level=logging.INFO)
 
 blp = Blueprint("users", __name__, description="Operations on users")
 
@@ -43,10 +44,16 @@ class UserRegister(MethodView):
         ).first()
 
         if email_existing:
-            abort(409, message="Email has been used")
+            return (
+                jsonify({"message", "The email has been used"}),
+                409,
+            )
 
         if username_existing:
-            abort(409, message="Username has been used")
+            return (
+                jsonify({"message", "The username has been used"}),
+                404,
+            )
 
         try:
             hashed_password = pbkdf2_sha512.hash(user_data["password"])
@@ -79,7 +86,10 @@ class UserLogin(MethodView):
         password = user_data.get("password")
 
         if username_or_email is None:
-            abort(400, "Username or email is required")
+            return (
+                jsonify({"message", "Username or email is required"}),
+                400,
+            )
 
         if UserModel.is_valid_email(username_or_email):
             user = UserModel.query.filter_by(email=username_or_email).first()
@@ -131,7 +141,10 @@ class UserGetOwnProfile(MethodView):
             current_user_id = get_jwt_identity()["id"]
             user = UserModel.query.filter_by(id=current_user_id).first()
             if not user:
-                abort(404, "User not found")
+                return (
+                    jsonify({"message", "The user is not found"}),
+                    404,
+                )
 
             user.total_following = count_following(user.id)
             user.total_follower = count_follower(user.id)
@@ -157,7 +170,10 @@ class GetProfileByUsername(MethodView):
             user = UserModel.query.filter_by(username=username_in_search).first()
 
             if not user:
-                abort(404, "User not found")
+                return (
+                    jsonify({"message", "The user is not found"}),
+                    404,
+                )
 
             user.total_following = count_following(user.id)
             user.total_follower = count_follower(user.id)
@@ -183,7 +199,10 @@ class GetProfileById(MethodView):
             user = UserModel.query.filter_by(id=user_id_in_search).first()
 
             if not user:
-                abort(404, "User not found")
+                return (
+                    jsonify({"message", "The user is not found"}),
+                    404,
+                )
 
             user.total_following = count_following(user.id)
             user.total_follower = count_follower(user.id)
@@ -270,9 +289,15 @@ class UserResetPassword(MethodView):
                 except Exception as e:
                     abort(500, description=f"Failed to reset user's password: {str(e)}")
             else:
-                abort(400, description="Incorrect reset password answer")
+                return (
+                    jsonify({"message", "Incorrect reset password answer"}),
+                    400,
+                )
         else:
-            abort(400, description="Incorrect current password")
+            return (
+                jsonify({"message", "Incorrect curent password"}),
+                400,
+            )
 
 
 @blp.route("/users/delete")

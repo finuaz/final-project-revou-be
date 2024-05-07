@@ -1,5 +1,4 @@
 from models import (
-    RecipeModel,
     CategoryModel,
     TypeModel,
     OriginModel,
@@ -11,8 +10,6 @@ from models import (
     RateModel,
     LikeModel,
 )
-
-from db import db
 
 
 def find_all_category(recipe_id):
@@ -34,14 +31,11 @@ def find_all_type(recipe_id):
 
 
 def find_all_origin(recipe_id):
-    print("-------------------- wait")
     recipe_origin = RecipeOriginRelationModel.query.filter_by(
         recipe_id=recipe_id
     ).first()
     if recipe_origin:
-        print("-------------------- here")
         origin = OriginModel.query.get(recipe_origin.origin_id)
-        print(origin)
         return origin.origin if origin else None
     # else:
     #     return None

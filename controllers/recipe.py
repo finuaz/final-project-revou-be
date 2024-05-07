@@ -9,7 +9,6 @@ from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from flask import jsonify, current_app
 from db import db
-
 from werkzeug.exceptions import Forbidden
 
 from models import (
@@ -29,11 +28,8 @@ from models import (
     LikeModel,
     RateModel,
     CommentModel,
-    UserModel,
 )
-
 from schemas import RecipeSchema, RecipePlusPlusSchema, CommentSchema
-
 from utils import (
     find_category,
     find_type,
@@ -63,7 +59,6 @@ from utils import (
 
 logging.basicConfig(level=logging.INFO)
 
-
 blp = Blueprint("recipes", __name__, description="Operations on recipes")
 
 
@@ -80,7 +75,10 @@ class RecipeRegister(MethodView):
             title=recipe_data["title"]
         ).first()
         if existing_recipe:
-            abort(409, message="Recipe already exists.")
+            return (
+                jsonify({"message", "Recipe with the same title already exists"}),
+                404,
+            )
 
         try:
             recipe = RecipeModel(
@@ -262,7 +260,7 @@ class RecipeDetailsById(MethodView):
         try:
             recipe = RecipeModel.query.filter_by(id=recipe_in_details_by_id).first()
             if not recipe:
-                jsonify({"message": "the recipe is not found"}), 404
+                return jsonify({"message": "the recipe is not found"}), 404
 
             # finding category, type, origin, tag, attachment
             recipe.categories = find_category(recipe_in_details_by_id)
@@ -323,7 +321,10 @@ class RecipeDetailsByTitle(MethodView):
                 title=recipe_in_details_by_title
             ).first()
             if not recipe:
-                abort(404, "Recipe not found")
+                return (
+                    jsonify({"message", "The recipe is not found"}),
+                    404,
+                )
 
             # finding category, type, origin, tag, attachment
             recipe.categories = find_category(recipe.id)
@@ -384,9 +385,10 @@ class RecipeUpdate(MethodView):
         recipe = RecipeModel.query.filter_by(id=recipe_in_details_by_id).first()
 
         if recipe.author_id != user_id:
-            abort(403, "You are not authorized to edit this recipe")
-
-        print(recipe)
+            return (
+                jsonify({"message", "You are not authorized to edit this recipe"}),
+                403,
+            )
 
         try:
 
@@ -516,8 +518,8 @@ class RecipeUpdate(MethodView):
                 if existing_attachment:
 
                     # check if the image has been used by other recipe
-                    if existing_attachment.recipe_id != recipe.id:
-                        abort(403, "Attachment has been used by other recipe")
+                    # if existing_attachment.recipe_id != recipe.id:
+                    #     abort(403, "Attachment has been used by other recipe")
 
                     if existing_attachment.attachment_link == recipe_data["attachment"]:
                         recipe.attachment = existing_attachment.attachment_link
@@ -619,10 +621,16 @@ class RecipeDelete(MethodView):
         recipe = RecipeModel.query.filter_by(id=recipe_in_details_by_id).first()
 
         if not recipe:
-            abort(404, "Recipe not found")
+            return (
+                jsonify({"message", "The recipe is not found"}),
+                404,
+            )
 
         if recipe.author_id != user_id:
-            abort(403, "You are not authorized to delete this recipe")
+            return (
+                jsonify({"message", "You are not authorized to delete the recipe"}),
+                403,
+            )
 
         try:
 

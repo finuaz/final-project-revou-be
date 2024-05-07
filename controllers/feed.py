@@ -1,11 +1,10 @@
+import logging
+
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
-from sqlalchemy.exc import SQLAlchemyError, IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
 from flask import jsonify, current_app
-from passlib.hash import pbkdf2_sha512
 from extensions import cache
-
-from werkzeug.exceptions import Forbidden
 
 from models import (
     RecipeModel,
@@ -18,8 +17,7 @@ from models import (
     RecipeTagRelationModel,
     TagModel,
 )
-from schemas import RecipeSchema, RecipePlusPlusSchema
-
+from schemas import RecipePlusPlusSchema
 from utils import (
     find_all_category,
     find_all_type,
@@ -30,6 +28,8 @@ from utils import (
     find_attachment,
     chef_recipe_check,
 )
+
+logging.basicConfig(level=logging.INFO)
 
 blp = Blueprint("feeds", __name__, description="Operations on feeds")
 
@@ -43,7 +43,7 @@ class GetAllFeeds(MethodView):
         try:
             recipes = RecipeModel.query.all()
             if not recipes:
-                abort(404, "No recipe created")
+                return jsonify({"message", "No recipe has been created"}), 404
 
             for recipe in recipes:
                 recipe.categories = find_all_category(recipe.id)
@@ -89,7 +89,12 @@ class GetFeedsByCategory(MethodView):
                 )
 
             if not recipes:
-                abort(404, "No recipe created under the category name")
+                return (
+                    jsonify(
+                        {"message", "No recipe has created under the category name"}
+                    ),
+                    404,
+                )
 
             for recipe in recipes:
                 recipe.categories = find_all_category(recipe.id)
@@ -133,7 +138,12 @@ class GetFeedsByType(MethodView):
                 )
 
             if not recipes:
-                abort(404, "No recipe created under the type name")
+                return (
+                    jsonify(
+                        {"message", "No recipe has been created under the type name"}
+                    ),
+                    404,
+                )
 
             for recipe in recipes:
                 recipe.categories = find_all_category(recipe.id)
@@ -177,7 +187,12 @@ class GetFeedsByOrigin(MethodView):
                 )
 
             if not recipes:
-                abort(404, "No recipe created under the origin name")
+                return (
+                    jsonify(
+                        {"message", "No recipe has been created under the origin name"}
+                    ),
+                    404,
+                )
 
             for recipe in recipes:
                 recipe.categories = find_all_category(recipe.id)
@@ -219,7 +234,12 @@ class GetFeedsByTag(MethodView):
                 )
 
             if not recipes:
-                abort(404, "No recipe created under the tag name")
+                return (
+                    jsonify(
+                        {"message", "No recipe has been created under the tag name"}
+                    ),
+                    404,
+                )
 
             for recipe in recipes:
                 recipe.categories = find_all_category(recipe.id)

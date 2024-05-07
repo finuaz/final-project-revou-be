@@ -2,6 +2,7 @@ from db import db
 from flask_smorest import abort
 import logging
 from sqlalchemy import func
+from flask import jsonify
 
 
 class RecipeTypeRelationModel(db.Model):
@@ -36,7 +37,10 @@ class RecipeTypeRelationModel(db.Model):
         recipe_type = cls.query.filter_by(id=recipe_type_id).first()
         if recipe_type is None:
             logging.error(f"recipe_type with id {recipe_type_id} not found.")
-            abort(404, f"recipe_type with id {recipe_type_id} not found.")
+            return (
+                jsonify({"message", "recipe type with id {recipe_type_id} not found."}),
+                404,
+            )
         return recipe_type
 
     def update_recipe_type(self, recipe_type_data):

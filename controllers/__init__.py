@@ -6,3 +6,4 @@ from .rate import blp as rates_blueprint
 from .comment import blp as comments_blueprint
 from .feed import blp as feeds_blueprint
 from .following import blp as following_blueprint
+from .collection import blp as collentions_blueprint
