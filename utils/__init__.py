@@ -22,6 +22,7 @@ from .recipe_helpers import (
     get_likes,
     get_rating,
     get_comments,
+    chef_recipe_check,
 )
 
 from .feed_helpers import (

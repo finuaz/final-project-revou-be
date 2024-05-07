@@ -15,6 +15,7 @@ from models import (
     RateModel,
     CommentModel,
     UserModel,
+    RecipeModel,
 )
 
 from db import db
@@ -219,3 +220,13 @@ def get_rating(recipe_id):
 def get_comments(recipe_id):
     comments = CommentModel.query.filter_by(recipe_id=recipe_id).all()
     return comments
+
+
+def chef_recipe_check(recipe_id):
+    recipe = RecipeModel.query.filter_by(id=recipe_id).first()
+    user = UserModel.query.filter_by(id=recipe.author_id).first()
+
+    if user.role.value == "chef":
+        return True
+    else:
+        return False
