@@ -27,6 +27,7 @@ from utils import (
     find_all_tag,
     get_likes,
     get_rating,
+    find_attachment,
 )
 
 blp = Blueprint("feeds", __name__, description="Operations on feeds")
@@ -50,6 +51,7 @@ class GetAllFeeds(MethodView):
                 recipe.tags = find_all_tag(recipe.id)
                 recipe.like_count = get_likes(recipe.id)
                 recipe.rating = get_rating(recipe.id)
+                recipe.attachment = find_attachment(recipe.id)
 
             serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
@@ -94,6 +96,7 @@ class GetAllFeeds(MethodView):
                 recipe.tags = find_all_tag(recipe.id)
                 recipe.like_count = get_likes(recipe.id)
                 recipe.rating = get_rating(recipe.id)
+                recipe.attachment = find_attachment(recipe.id)
 
             serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
@@ -136,6 +139,7 @@ class GetAllFeeds(MethodView):
                 recipe.tags = find_all_tag(recipe.id)
                 recipe.like_count = get_likes(recipe.id)
                 recipe.rating = get_rating(recipe.id)
+                recipe.attachment = find_attachment(recipe.id)
 
             serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
@@ -178,6 +182,7 @@ class GetAllFeeds(MethodView):
                 recipe.tags = find_all_tag(recipe.id)
                 recipe.like_count = get_likes(recipe.id)
                 recipe.rating = get_rating(recipe.id)
+                recipe.attachment = find_attachment(recipe.id)
 
             serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200
@@ -218,6 +223,7 @@ class GetAllFeeds(MethodView):
                 recipe.tags = find_all_tag(recipe.id)
                 recipe.like_count = get_likes(recipe.id)
                 recipe.rating = get_rating(recipe.id)
+                recipe.attachment = find_attachment(recipe.id)
 
             serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
             return jsonify(serialized_recipes), 200

@@ -2,6 +2,7 @@ from db import db
 from flask_smorest import abort
 import logging
 from sqlalchemy import func
+from models import UserModel
 
 
 class CommentModel(db.Model):
@@ -54,3 +55,10 @@ class CommentModel(db.Model):
     def delete_comment(self):
         db.session.delete(self)
         db.session.commit()
+
+    @property
+    def user_full_name(self):
+        user = UserModel.query.get(self.user_id)  # Fetch user if necessary
+        if user:
+            return f"{user.first_name} {user.last_name}"
+        return None  # Handle cases where user might not exist

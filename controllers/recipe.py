@@ -28,9 +28,11 @@ from models import (
     NutritionModel,
     LikeModel,
     RateModel,
+    CommentModel,
+    UserModel,
 )
 
-from schemas import RecipeSchema, RecipePlusPlusSchema
+from schemas import RecipeSchema, RecipePlusPlusSchema, CommentSchema
 
 from utils import (
     find_category,
@@ -55,6 +57,7 @@ from utils import (
     find_ingredient,
     get_likes,
     get_rating,
+    get_comments,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -257,7 +260,7 @@ class RecipeDetailsById(MethodView):
         try:
             recipe = RecipeModel.query.filter_by(id=recipe_in_details_by_id).first()
             if not recipe:
-                abort(404, "Recipe not found")
+                jsonify({"message": "the recipe is not found"}), 404
 
             # finding category, type, origin, tag, attachment
             recipe.categories = find_category(recipe_in_details_by_id)
@@ -285,10 +288,15 @@ class RecipeDetailsById(MethodView):
             recipe.ingredients = find_ingredient(recipe_in_details_by_id)
             recipe.like_count = get_likes(recipe_in_details_by_id)
             recipe.rating = get_rating(recipe_in_details_by_id)
+            recipe.comments = get_comments(recipe_in_details_by_id)
 
             increment_view(recipe)
 
+            comments = get_comments(recipe_in_details_by_id)
+            serialized_comments = CommentSchema().dump(comments, many=True)
+
             serialized_recipe = RecipePlusPlusSchema().dump(recipe)
+            serialized_recipe["comments"] = serialized_comments
             return jsonify(serialized_recipe), 200
         except SQLAlchemyError as e:
             current_app.logger.error(f"Database error: {str(e)}")
@@ -296,6 +304,25 @@ class RecipeDetailsById(MethodView):
         except Exception as e:
             current_app.logger.error(f"An unexpected error occurred: {str(e)}")
             abort(500, "Internal Server Error")
+
+
+# def get_comments(recipe_id):
+#     comments = []
+#     recipe_comments = CommentModel.query.filter_by(recipe_id=recipe_id).all()
+
+#     if not recipe_comments:
+#         return comments
+
+#     for comment in recipe_comments:
+#         comment_member = []
+#         commenter = UserModel.query.filter_by(id=comment.user_id).first()
+#         commenter_name = commenter.first_name + " " + commenter.last_name
+
+#         comment_member.append(commenter_name)
+#         comment_member.append(comment.message)
+#         comments.append(comment_member)
+
+#     return comments
 
 
 @blp.route("/recipes/details/<string:recipe_in_details_by_title>")
@@ -334,10 +361,15 @@ class RecipeDetailsByTitle(MethodView):
             recipe.ingredients = find_ingredient(recipe.id)
             recipe.like_count = get_likes(recipe.id)
             recipe.rating = get_rating(recipe.id)
+            recipe.comments = get_comments(recipe.id)
 
             increment_view(recipe)
 
+            comments = get_comments(recipe.id)
+            serialized_comments = CommentSchema().dump(comments, many=True)
+
             serialized_recipe = RecipePlusPlusSchema().dump(recipe)
+            serialized_recipe["comments"] = serialized_comments
             return jsonify(serialized_recipe), 200
         except SQLAlchemyError as e:
             current_app.logger.error(f"Database error: {str(e)}")
@@ -601,6 +633,7 @@ class RecipeDelete(MethodView):
 
         try:
 
+            CommentModel.query.filter_by(recipe_id=recipe.id).delete()
             LikeModel.query.filter_by(recipe_id=recipe.id).delete()
             RateModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeIngredientRelationModel.query.filter_by(recipe_id=recipe.id).delete()

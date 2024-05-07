@@ -13,6 +13,7 @@ from .recipeschema import (
     RecipeImageSchema,
     RecipeInstructionSchema,
     RecipePlusPlusSchema,
+    CommentSchema,
 )
 
 from .interactionschema import LikeSchema, RateSchema

@@ -21,6 +21,7 @@ from .recipe_helpers import (
     find_ingredient,
     get_likes,
     get_rating,
+    get_comments,
 )
 
 from .feed_helpers import (
