@@ -27,7 +27,7 @@ blp = Blueprint("comments", __name__, description="Operations on comments")
 
 
 @blp.route("/recipes/comment/<int:recipe_in_search>")
-class RecipeComment(MethodView):
+class AddCommentToRecipe(MethodView):
     @blp.response(201, CommentSchema)
     @jwt_required()
     def post(self, recipe_in_search):
@@ -82,7 +82,7 @@ class RecipeComment(MethodView):
 
 
 @blp.route("/recipes/comment/<int:recipe_in_search>/edit/<int:comment_id_in_search>")
-class RecipeComment(MethodView):
+class UpdateCommentOnRecipe(MethodView):
     @blp.response(201, CommentSchema)
     @jwt_required()
     def put(self, recipe_in_search, comment_id_in_search):
@@ -129,7 +129,7 @@ class RecipeComment(MethodView):
 
 
 @blp.route("/recipes/uncomment/<int:recipe_in_search>/<int:comment_id_in_search>")
-class RecipeUncomment(MethodView):
+class UncommentFromRecipe(MethodView):
     @blp.response(201, CommentSchema)
     @jwt_required()
     def delete(self, recipe_in_search, comment_id_in_search):

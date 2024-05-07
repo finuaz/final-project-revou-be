@@ -33,3 +33,5 @@ from .feed_helpers import (
     get_likes,
     get_rating,
 )
+
+from .user_helpers import count_following, count_follower
