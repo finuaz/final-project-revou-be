@@ -288,7 +288,7 @@ class RecipeDetailsById(MethodView):
             recipe.ingredients = find_ingredient(recipe_in_details_by_id)
             recipe.like_count = get_likes(recipe_in_details_by_id)
             recipe.rating = get_rating(recipe_in_details_by_id)
-            # recipe.comments = get_comments(recipe_in_details_by_id)
+            recipe.comments = get_comments(recipe_in_details_by_id)
 
             increment_view(recipe)
 
@@ -361,6 +361,7 @@ class RecipeDetailsByTitle(MethodView):
             recipe.ingredients = find_ingredient(recipe.id)
             recipe.like_count = get_likes(recipe.id)
             recipe.rating = get_rating(recipe.id)
+            recipe.comments = get_comments(recipe.id)
 
             increment_view(recipe)
 
@@ -632,6 +633,7 @@ class RecipeDelete(MethodView):
 
         try:
 
+            CommentModel.query.filter_by(recipe_id=recipe.id).delete()
             LikeModel.query.filter_by(recipe_id=recipe.id).delete()
             RateModel.query.filter_by(recipe_id=recipe.id).delete()
             RecipeIngredientRelationModel.query.filter_by(recipe_id=recipe.id).delete()
