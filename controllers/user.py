@@ -179,7 +179,7 @@ class GetProfileByUsername(MethodView):
             user.total_following = count_following(user.id)
             user.total_follower = count_follower(user.id)
 
-            increment_view(user.id)
+            increment_view(user)
 
             serialized_user = UserGetProfileSchema().dump(user)
             return jsonify(serialized_user), 200
@@ -210,7 +210,7 @@ class GetProfileById(MethodView):
             user.total_following = count_following(user.id)
             user.total_follower = count_follower(user.id)
 
-            # increment_view(user)
+            increment_view(user)
 
             serialized_user = UserGetProfileSchema().dump(user)
             return jsonify(serialized_user), 200
