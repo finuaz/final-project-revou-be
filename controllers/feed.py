@@ -17,6 +17,8 @@ from models import (
     OriginModel,
     RecipeTagRelationModel,
     TagModel,
+    IngredientModel,
+    RecipeIngredientRelationModel,
 )
 from schemas import RecipePlusPlusSchema
 from utils import (
@@ -348,6 +350,24 @@ class GetFeedsByCategory(MethodView):
 
                 for recipe_tag in recipe_tag_relations:
                     recipe = RecipeModel.query.get(recipe_tag.recipe_id)
+
+                    if recipe not in recipes:
+                        recipes.append(recipe)
+
+            # Search in IngredientModel
+            ingredients = IngredientModel.query.filter(
+                IngredientModel.ingredient.ilike(f"%{search_keyword}%")
+            ).all()
+
+            for ingredient in ingredients:
+                recipe_ingredient_relations = (
+                    RecipeIngredientRelationModel.query.filter_by(
+                        ingredient_id=ingredient.id
+                    ).all()
+                )
+
+                for recipe_ingredient in recipe_ingredient_relations:
+                    recipe = RecipeModel.query.get(recipe_ingredient.recipe_id)
 
                     if recipe not in recipes:
                         recipes.append(recipe)
