@@ -177,11 +177,6 @@ def find_iron(recipe_id):
     return None
 
 
-def increment_view(recipe):
-    recipe.view_count += 1
-    db.session.commit()
-
-
 def get_likes(recipe_id):
     like_count = LikeModel.query.filter_by(recipe_id=recipe_id).count()
     return like_count
@@ -244,3 +239,8 @@ ingredient_default_images = [
 ]
 
 selected_ingredient_image = random.choice(ingredient_default_images)
+
+
+def increment_view(user_or_recipe):
+    user_or_recipe.view_count += 1
+    db.session.commit()

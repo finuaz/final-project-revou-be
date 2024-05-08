@@ -38,6 +38,7 @@ class UserGetProfileSchema(Schema):
     location = fields.String()
     total_following = fields.Integer()
     total_follower = fields.Integer()
+    view_count = fields.Integer()
     created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
 
