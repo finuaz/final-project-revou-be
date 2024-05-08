@@ -1,3 +1,5 @@
+import random
+
 from models import (
     CategoryModel,
     TypeModel,
@@ -230,3 +232,15 @@ def chef_recipe_check(recipe_id):
         return True
     else:
         return False
+
+
+ingredient_default_images = [
+    "https://lwgscyxqeipmjzaxphkv.supabase.co/storage/v1/object/public/ingredients_image/images/default/kisspng-indian-cuisine-spice-mix-curry-powder-food-age-reversing-nutrition-ayurveda-creating-radi-5b7ba6e00461f8.418255421534830304018.png",
+    "https://lwgscyxqeipmjzaxphkv.supabase.co/storage/v1/object/public/ingredients_image/images/default/kisspng-herbalism-therapy-herbal-tonic-medicine-spice-5abb76950594b8.6884587515222350290229.png",
+    "https://lwgscyxqeipmjzaxphkv.supabase.co/storage/v1/object/public/ingredients_image/images/default/kisspng-organic-food-vegetable-carrot-5ae2b63ea38993.9311661015248072306699.png",
+    "https://lwgscyxqeipmjzaxphkv.supabase.co/storage/v1/object/public/ingredients_image/images/default/kisspng-spice-masala-indian-cuisine-nutmeg-turmeric-spices-5b17857fbed319.5587043615282681597816.png",
+    "https://lwgscyxqeipmjzaxphkv.supabase.co/storage/v1/object/public/ingredients_image/images/default/kisspng-vegetable-portable-network-graphics-fruit-clip-art-baking-needs-5cbf3c93326f43.1363482015560367552066.png",
+    "https://lwgscyxqeipmjzaxphkv.supabase.co/storage/v1/object/public/ingredients_image/images/default/kisspng-allspice-herb-food-spice-mix-spices-5abd2b9718b375.3009980215223469031012.png",
+]
+
+selected_ingredient_image = random.choice(ingredient_default_images)

@@ -23,6 +23,8 @@ from .recipe_helpers import (
     get_rating,
     get_comments,
     chef_recipe_check,
+    selected_ingredient_image,
+    ingredient_default_images,
 )
 
 from .feed_helpers import (
