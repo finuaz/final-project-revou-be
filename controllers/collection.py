@@ -8,6 +8,7 @@ from flask_jwt_extended import (
 from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError
 from flask import jsonify, current_app
+from sqlalchemy import desc
 
 from models import (
     RecipeModel,
@@ -43,7 +44,11 @@ class GetAllSelfCreatedRecipes(MethodView):
         current_user_id = get_jwt_identity()["id"]
 
         try:
-            recipes = RecipeModel.query.filter_by(author_id=current_user_id).all()
+            recipes = (
+                RecipeModel.query.filter_by(author_id=current_user_id)
+                .order_by(desc(RecipeModel.nutriscore))
+                .all()
+            )
 
             if not recipes:
                 return jsonify({"message", "You have not created any recipe"}), 404
@@ -78,7 +83,11 @@ class GetAllRecipesCreatedByUser(MethodView):
     def get(self, author_id):
 
         try:
-            recipes = RecipeModel.query.filter_by(author_id=author_id).all()
+            recipes = (
+                RecipeModel.query.filter_by(author_id=author_id)
+                .order_by(desc(RecipeModel.nutriscore))
+                .all()
+            )
 
             if not recipes:
                 return jsonify({"message", "the user have not created any recipe"}), 404
@@ -123,7 +132,11 @@ class GetAllRecipesCreatedByUser(MethodView):
                     return jsonify({"message": "the user is not found"}), 404
 
         try:
-            recipes = RecipeModel.query.filter_by(author_id=user.id).all()
+            recipes = (
+                RecipeModel.query.filter_by(author_id=user.id)
+                .order_by(desc(RecipeModel.nutriscore))
+                .all()
+            )
 
             if not recipes:
                 return jsonify({"message", "The user has not created any recipe"}), 404
@@ -161,7 +174,11 @@ class GetAllLikedRecipes(MethodView):
         recipes = []
 
         try:
-            liked_recipes = LikeModel.query.filter_by(user_id=current_user_id).all()
+            liked_recipes = (
+                LikeModel.query.filter_by(user_id=current_user_id)
+                .order_by(desc(RecipeModel.nutriscore))
+                .all()
+            )
 
             for liked_recipe in liked_recipes:
 
@@ -203,9 +220,11 @@ class GetAllRecipesFromFollowedUser(MethodView):
         recipes = []
 
         try:
-            followed_users = FollowingModel.query.filter_by(
-                follower_id=current_user_id
-            ).all()
+            followed_users = (
+                FollowingModel.query.filter_by(follower_id=current_user_id)
+                .order_by(desc(RecipeModel.nutriscore))
+                .all()
+            )
 
             if not followed_users:
                 return jsonify({"message", "You are not following any user"}), 404
@@ -259,7 +278,11 @@ class GetAllRecipesCreatedByChef(MethodView):
                 return jsonify({"message", "there is no chef here"}), 404
 
             for chef in chefs:
-                recipes = RecipeModel.query.filter_by(author_id=chef.id).all()
+                recipes = (
+                    RecipeModel.query.filter_by(author_id=chef.id)
+                    .order_by(desc(RecipeModel.nutriscore))
+                    .all()
+                )
 
                 for recipe in recipes:
                     recipe.categories = find_all_category(recipe.id)
