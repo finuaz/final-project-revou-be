@@ -578,7 +578,7 @@ class RecipeUpdate(MethodView):
                 if not existing_ingredient:
                     ingredient = IngredientModel(
                         ingredient=ingredient,
-                        ingredient_image=None,
+                        ingredient_image=random.choice(ingredient_default_images),
                     )
 
                     ingredient.add_ingredient()
