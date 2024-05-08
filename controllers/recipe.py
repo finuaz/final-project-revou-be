@@ -1,4 +1,5 @@
 import logging
+import random
 
 from flask.views import MethodView
 from flask_jwt_extended import (
@@ -55,6 +56,7 @@ from utils import (
     get_rating,
     get_comments,
     chef_recipe_check,
+    ingredient_default_images,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -228,7 +230,7 @@ class RecipeRegister(MethodView):
 
                         ingredient = IngredientModel(
                             ingredient=ingredient_member[0],
-                            ingredient_image=None,
+                            ingredient_image=random.choice(ingredient_default_images),
                         )
 
                         ingredient.add_ingredient()
