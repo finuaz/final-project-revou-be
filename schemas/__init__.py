@@ -8,6 +8,7 @@ from .userschema import (
     UserDeletionSchema,
     UserFollowingSchema,
     UserGetFollowingFollower,
+    GetResetPasswordPackage,
 )
 
 from .recipeschema import (

@@ -72,6 +72,11 @@ class UserResetPasswordSchema(Schema):
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
 
 
+class GetResetPasswordPackage(Schema):
+    id = fields.Integer(dump_only=True)
+    reset_password_question = fields.String()
+
+
 class UserDeletionSchema(Schema):
     id = fields.Integer(dump_only=True)
     password = fields.String(required=True)

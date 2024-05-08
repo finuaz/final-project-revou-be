@@ -24,6 +24,7 @@ from schemas import (
     UserUpdateImageSchema,
     UserResetPasswordSchema,
     UserDeletionSchema,
+    GetResetPasswordPackage,
 )
 from utils import count_following, count_follower
 
@@ -261,6 +262,24 @@ class UserUpdateImage(MethodView):
 
         except Exception as e:
             abort(500, description=f"Failed to update user information: {str(e)}")
+
+
+@blp.route("/users/reset-password/question")
+class UserResetPassword(MethodView):
+
+    @jwt_required()
+    @blp.response(200, GetResetPasswordPackage)
+    def get(self):
+        user_id = get_jwt_identity()["id"]
+
+        user = UserModel.query.filter_by(id=user_id).first()
+        question = user.reset_password_question
+
+        user.id = user_id
+        user.reset_password_question = question
+
+        serialized_question = GetResetPasswordPackage().dump(user)
+        return jsonify(serialized_question), 200
 
 
 @blp.route("/users/reset-password")
