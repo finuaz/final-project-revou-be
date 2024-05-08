@@ -1,9 +1,9 @@
 import logging
 
 from flask.views import MethodView
-from flask_smorest import Blueprint, abort
+from flask_smorest import Blueprint, abort, Page
 from sqlalchemy.exc import SQLAlchemyError
-from flask import jsonify, current_app
+from flask import jsonify, current_app, request
 from extensions import cache
 from sqlalchemy import desc, or_
 
@@ -44,7 +44,9 @@ class GetAllFeeds(MethodView):
     @cache.cached(timeout=60 * 3)
     def get(self):
         try:
+
             recipes = RecipeModel.query.order_by(desc(RecipeModel.nutriscore)).all()
+
             if not recipes:
                 return jsonify({"message", "No recipe has been created"}), 404
 
@@ -59,6 +61,7 @@ class GetAllFeeds(MethodView):
                 recipe.is_chef_recipe = chef_recipe_check(recipe.id)
 
             serialized_recipes = RecipePlusPlusSchema(many=True).dump(recipes)
+
             return jsonify(serialized_recipes), 200
 
         except SQLAlchemyError as e:

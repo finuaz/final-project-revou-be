@@ -92,7 +92,7 @@ class SocialList(MethodView):
 class SocialDisplay(MethodView):
 
     @blp.response(201, UserSocialsSchema)
-    @cache.cached(timeout=60 * 60 * 24)
+    @cache.cached(timeout=60 * 5)
     def get(self, user_id_in_search):
 
         try:

@@ -26,7 +26,7 @@ from schemas import (
     UserDeletionSchema,
     GetResetPasswordPackage,
 )
-from utils import count_following, count_follower
+from utils import count_following, count_follower, increment_view
 
 logging.basicConfig(level=logging.INFO)
 
@@ -164,7 +164,7 @@ class UserGetOwnProfile(MethodView):
 class GetProfileByUsername(MethodView):
 
     @blp.response(200, schema=UserGetProfileSchema)
-    @cache.cached(timeout=60 * 60 * 24)
+    # @cache.cached(timeout=60 * 5)
     def get(self, username_in_search):
         try:
 
@@ -178,6 +178,8 @@ class GetProfileByUsername(MethodView):
 
             user.total_following = count_following(user.id)
             user.total_follower = count_follower(user.id)
+
+            increment_view(user.id)
 
             serialized_user = UserGetProfileSchema().dump(user)
             return jsonify(serialized_user), 200
@@ -193,7 +195,7 @@ class GetProfileByUsername(MethodView):
 class GetProfileById(MethodView):
 
     @blp.response(200, schema=UserGetProfileSchema)
-    @cache.cached(timeout=60 * 60 * 24)
+    # @cache.cached(timeout=60 * 5)
     def get(self, user_id_in_search):
         try:
 
@@ -207,6 +209,8 @@ class GetProfileById(MethodView):
 
             user.total_following = count_following(user.id)
             user.total_follower = count_follower(user.id)
+
+            # increment_view(user)
 
             serialized_user = UserGetProfileSchema().dump(user)
             return jsonify(serialized_user), 200

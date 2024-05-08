@@ -30,10 +30,10 @@ class AddCommentToRecipe(MethodView):
             recipe = RecipeModel.query.filter_by(id=recipe_in_search).first()
 
             if not recipe:
-                return jsonify({"message", "Recipe is not found"}), 404
+                abort(404, message="Recipe is not found")
 
             if not comment_message:
-                return jsonify({"message", "Comment message is required"}), 403
+                abort(403, message="Comment message is required")
 
             comment = CommentModel(
                 recipe_id=recipe_in_search,
@@ -42,10 +42,6 @@ class AddCommentToRecipe(MethodView):
             )
 
             comment.add_comment()
-
-            comment.message = comment.message
-
-            comments = get_comments(recipe_in_search)
 
             serialized_comment = CommentSchema().dump(comment)
             return jsonify(serialized_comment), 200
@@ -70,19 +66,16 @@ class UpdateCommentOnRecipe(MethodView):
             recipe = RecipeModel.query.filter_by(id=recipe_in_search).first()
 
             if not recipe:
-                return jsonify({"message", "Recipe is not found"}), 404
+                abort(404, message="Recipe is not found")
 
             if existing_comment.user_id != current_user_id:
-                return (
-                    jsonify({"message": "you are not authorized to edit this comment"}),
-                    403,
-                )
+                abort(403, message="you are not authorized to edit this comment")
 
             if not comment_message:
-                return jsonify({"message", "Comment message is required"}), 403
+                abort(403, message="Comment message is required")
 
             if not existing_comment:
-                return jsonify({"message": "the comment is not found"}), 404
+                abort(404, message="The comment is not found")
 
             existing_comment.message = comment_message
             existing_comment.update_comment(comment_data={"message": comment_message})
@@ -116,13 +109,13 @@ class UncommentFromRecipe(MethodView):
             ).first()
 
             if not comment_exist:
-                return jsonify({"message": "The comment is not found"}), 404
+                abort(404, message="The comment is not found")
 
             if comment_exist.user_id != current_user_id:
-                jsonify({"message": "You are not allowed to delete this comment"}), 403
+                abort(404, message="You are not allowed to delete this comment")
 
             if comment_exist.recipe_id != recipe_id:
-                return jsonify({"message": "The comment is not found"}), 404
+                abort(404, message="The comment is not found")
 
             comment_exist.delete_comment()
 

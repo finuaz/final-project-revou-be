@@ -17,7 +17,7 @@ from models import (
     FollowingModel,
     UserRole,
 )
-from schemas import RecipePlusPlusSchema
+from schemas import RecipePlusPlusSchema, UserGetProfileSchema
 from utils import (
     find_all_category,
     find_all_type,
@@ -27,6 +27,8 @@ from utils import (
     get_rating,
     find_attachment,
     chef_recipe_check,
+    count_follower,
+    count_following,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -51,7 +53,7 @@ class GetAllSelfCreatedRecipes(MethodView):
             )
 
             if not recipes:
-                return jsonify({"message", "You have not created any recipe"}), 404
+                abort(404, message="You have not created any recipe")
 
             for recipe in recipes:
                 recipe.categories = find_all_category(recipe.id)
@@ -90,7 +92,7 @@ class GetAllRecipesCreatedByUser(MethodView):
             )
 
             if not recipes:
-                return jsonify({"message", "the user have not created any recipe"}), 404
+                abort(404, message="The user has not created any recipe")
 
             for recipe in recipes:
                 recipe.categories = find_all_category(recipe.id)
@@ -129,7 +131,7 @@ class GetAllRecipesCreatedByUser(MethodView):
                 user = UserModel.query.filter_by(username=author_name_in_search).first()
 
                 if not user:
-                    return jsonify({"message": "the user is not found"}), 404
+                    abort(404, message="The user is not found")
 
         try:
             recipes = (
@@ -139,7 +141,7 @@ class GetAllRecipesCreatedByUser(MethodView):
             )
 
             if not recipes:
-                return jsonify({"message", "The user has not created any recipe"}), 404
+                abort(404, message="The user has not created any recipe")
 
             for recipe in recipes:
                 recipe.categories = find_all_category(recipe.id)
@@ -179,6 +181,9 @@ class GetAllLikedRecipes(MethodView):
                 .order_by(desc(RecipeModel.nutriscore))
                 .all()
             )
+
+            if not liked_recipes:
+                abort(404, message="You have not liked any recipes yet")
 
             for liked_recipe in liked_recipes:
 
@@ -227,7 +232,7 @@ class GetAllRecipesFromFollowedUser(MethodView):
             )
 
             if not followed_users:
-                return jsonify({"message", "You are not following any user"}), 404
+                abort(404, message="The are not following any users")
 
             for followed_user in followed_users:
 
@@ -275,7 +280,7 @@ class GetAllRecipesCreatedByChef(MethodView):
             chefs = UserModel.query.filter_by(role=UserRole.CHEF).all()
 
             if not chefs:
-                return jsonify({"message", "there is no chef here"}), 404
+                abort(404, message="There is no chef here")
 
             for chef in chefs:
                 recipes = (
@@ -299,6 +304,70 @@ class GetAllRecipesCreatedByChef(MethodView):
 
             return jsonify({"message": "OK"}), 200
 
+        except SQLAlchemyError as e:
+            current_app.logger.error(f"Database error: {str(e)}")
+            abort(500, "Internal Server Error")
+        except Exception as e:
+            current_app.logger.error(f"An unexpected error occurred: {str(e)}")
+            abort(500, "Internal Server Error")
+
+
+@blp.route("/collection/list/user-followers")
+class GetAllUserFollowers(MethodView):
+
+    @blp.response(200, UserGetProfileSchema(many=True))
+    # @cache.cached(timeout=60 / 2)
+    @jwt_required()
+    def get(self):
+        try:
+            current_user_id = get_jwt_identity()["id"]
+
+            followers = FollowingModel.query.filter_by(
+                followed_id=current_user_id
+            ).all()
+
+            if not followers:
+                abort(404, message="You have no any follower")
+
+            for follower in followers:
+                user = UserModel.query.filter_by(id=follower.follower_id).first()
+                user.total_following = count_following(user.id)
+                user.total_follower = count_follower(user.id)
+
+            serialized_user = UserGetProfileSchema().dump(user)
+            return jsonify(serialized_user), 200
+        except SQLAlchemyError as e:
+            current_app.logger.error(f"Database error: {str(e)}")
+            abort(500, "Internal Server Error")
+        except Exception as e:
+            current_app.logger.error(f"An unexpected error occurred: {str(e)}")
+            abort(500, "Internal Server Error")
+
+
+@blp.route("/collection/list/followed-users")
+class GetAllFollowedUsers(MethodView):
+
+    @blp.response(200, UserGetProfileSchema(many=True))
+    # @cache.cached(timeout=60 / 2)
+    @jwt_required()
+    def get(self):
+        try:
+            current_user_id = get_jwt_identity()["id"]
+
+            followed_users = FollowingModel.query.filter_by(
+                follower_id=current_user_id
+            ).all()
+
+            if not followed_users:
+                return jsonify({"message": "You have not following any user yet"}), 404
+
+            for followed_user in followed_users:
+                user = UserModel.query.filter_by(id=followed_user.followed_id).first()
+                user.total_following = count_following(user.id)
+                user.total_follower = count_follower(user.id)
+
+            serialized_user = UserGetProfileSchema().dump(user)
+            return jsonify(serialized_user), 200
         except SQLAlchemyError as e:
             current_app.logger.error(f"Database error: {str(e)}")
             abort(500, "Internal Server Error")
