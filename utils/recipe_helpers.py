@@ -244,3 +244,9 @@ selected_ingredient_image = random.choice(ingredient_default_images)
 def increment_view(user_or_recipe):
     user_or_recipe.view_count += 1
     db.session.commit()
+
+
+def get_author_name(recipe_id):
+    author_id = RecipeModel.query.filter_by(id=recipe_id).first().author_id
+    author_name = UserModel.query.filter_by(id=author_id).first().username
+    return author_name

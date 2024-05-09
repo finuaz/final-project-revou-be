@@ -29,6 +29,7 @@ from models import (
     LikeModel,
     RateModel,
     CommentModel,
+    UserModel,
 )
 from schemas import RecipeSchema, RecipePlusPlusSchema, CommentSchema
 from utils import (
@@ -57,6 +58,7 @@ from utils import (
     get_comments,
     chef_recipe_check,
     ingredient_default_images,
+    get_author_name,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -247,6 +249,7 @@ class RecipeRegister(MethodView):
             recipe.like_count = get_likes(recipe.id)
             recipe.rating = get_rating(recipe.id)
             recipe.is_chef_recipe = chef_recipe_check(recipe.id)
+            recipe.author_name = get_author_name(recipe.id)
 
         except IntegrityError:
             abort(400, message="recipe with that title already exists")
@@ -263,6 +266,8 @@ class RecipeDetailsById(MethodView):
             recipe = RecipeModel.query.filter_by(id=recipe_in_details_by_id).first()
             if not recipe:
                 return jsonify({"message": "the recipe is not found"}), 404
+
+            recipe.author_name = get_author_name(recipe_in_details_by_id)
 
             # finding category, type, origin, tag, attachment
             recipe.categories = find_category(recipe_in_details_by_id)
@@ -313,6 +318,12 @@ class RecipeDetailsById(MethodView):
             abort(500, "Internal Server Error")
 
 
+# def get_author_name(recipe_id):
+#     author_id = RecipeModel.query.filter_by(id=recipe_id).first().author_id
+#     author_name = UserModel.query.filter_by(id=author_id).first().username
+#     return author_name
+
+
 @blp.route("/recipes/details/<string:recipe_in_details_by_title>")
 class RecipeDetailsByTitle(MethodView):
 
@@ -327,6 +338,8 @@ class RecipeDetailsByTitle(MethodView):
                     jsonify({"message", "The recipe is not found"}),
                     404,
                 )
+
+            recipe.author_name = get_author_name(recipe.id)
 
             # finding category, type, origin, tag, attachment
             recipe.categories = find_category(recipe.id)
@@ -600,6 +613,7 @@ class RecipeUpdate(MethodView):
                     recipe_ingredient.amount = amount
                     db.session.commit()
 
+            recipe.author_name = get_author_name(recipe.id)
             recipe.like_count = get_likes(recipe.id)
             recipe.rating = get_rating(recipe.id)
 

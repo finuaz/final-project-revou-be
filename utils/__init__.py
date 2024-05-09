@@ -23,6 +23,7 @@ from .recipe_helpers import (
     get_rating,
     get_comments,
     chef_recipe_check,
+    get_author_name,
     selected_ingredient_image,
     ingredient_default_images,
 )

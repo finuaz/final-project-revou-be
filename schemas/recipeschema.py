@@ -62,6 +62,7 @@ class RecipeSchema(Schema):
 class RecipePlusPlusSchema(Schema):
     id = fields.Integer(dump_only=True)
     author_id = fields.Integer()
+    author_name = fields.String()
     title = fields.String()
     description = fields.String()
     nutriscore = fields.Integer()

@@ -29,6 +29,7 @@ from utils import (
     chef_recipe_check,
     count_follower,
     count_following,
+    get_author_name,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -56,6 +57,7 @@ class GetAllSelfCreatedRecipes(MethodView):
                 abort(404, message="You have not created any recipe")
 
             for recipe in recipes:
+                recipe.author_name = get_author_name(recipe.id)
                 recipe.categories = find_all_category(recipe.id)
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
@@ -95,6 +97,7 @@ class GetAllRecipesCreatedByUser(MethodView):
                 abort(404, message="The user has not created any recipe")
 
             for recipe in recipes:
+                recipe.author_name = get_author_name(recipe.id)
                 recipe.categories = find_all_category(recipe.id)
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
@@ -144,6 +147,7 @@ class GetAllRecipesCreatedByUser(MethodView):
                 abort(404, message="The user has not created any recipe")
 
             for recipe in recipes:
+                recipe.author_name = get_author_name(recipe.id)
                 recipe.categories = find_all_category(recipe.id)
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
@@ -176,11 +180,7 @@ class GetAllLikedRecipes(MethodView):
         recipes = []
 
         try:
-            liked_recipes = (
-                LikeModel.query.filter_by(user_id=current_user_id)
-                .order_by(desc(RecipeModel.nutriscore))
-                .all()
-            )
+            liked_recipes = LikeModel.query.filter_by(user_id=current_user_id).all()
 
             if not liked_recipes:
                 abort(404, message="You have not liked any recipes yet")
@@ -190,7 +190,7 @@ class GetAllLikedRecipes(MethodView):
                 recipe = RecipeModel.query.filter_by(id=liked_recipe.recipe_id).first()
 
                 if recipe:
-
+                    recipe.author_name = get_author_name(liked_recipe.recipe_id)
                     recipe.categories = find_all_category(liked_recipe.recipe_id)
                     recipe.type = find_all_type(liked_recipe.recipe_id)
                     recipe.origin = find_all_origin(liked_recipe.recipe_id)
@@ -225,14 +225,12 @@ class GetAllRecipesFromFollowedUser(MethodView):
         recipes = []
 
         try:
-            followed_users = (
-                FollowingModel.query.filter_by(follower_id=current_user_id)
-                .order_by(desc(RecipeModel.nutriscore))
-                .all()
-            )
+            followed_users = FollowingModel.query.filter_by(
+                follower_id=current_user_id
+            ).all()
 
             if not followed_users:
-                abort(404, message="The are not following any users")
+                abort(404, message="You are not following any users")
 
             for followed_user in followed_users:
 
@@ -246,7 +244,7 @@ class GetAllRecipesFromFollowedUser(MethodView):
                 for recipe in user_recipes:
 
                     if recipe:
-
+                        recipe.author_name = get_author_name(recipe.id)
                         recipe.categories = find_all_category(recipe.id)
                         recipe.type = find_all_type(recipe.id)
                         recipe.origin = find_all_origin(recipe.id)
@@ -290,6 +288,7 @@ class GetAllRecipesCreatedByChef(MethodView):
                 )
 
                 for recipe in recipes:
+                    recipe.author_name = get_author_name(recipe.id)
                     recipe.categories = find_all_category(recipe.id)
                     recipe.type = find_all_type(recipe.id)
                     recipe.origin = find_all_origin(recipe.id)
