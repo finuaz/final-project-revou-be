@@ -30,6 +30,7 @@ from utils import (
     get_rating,
     find_attachment,
     chef_recipe_check,
+    get_author_name,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -51,6 +52,7 @@ class GetAllFeeds(MethodView):
                 return jsonify({"message", "No recipe has been created"}), 404
 
             for recipe in recipes:
+                recipe.author_name = get_author_name(recipe.id)
                 recipe.categories = find_all_category(recipe.id)
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
@@ -105,6 +107,7 @@ class GetFeedsByCategory(MethodView):
                 )
 
             for recipe in recipes:
+                recipe.author_name = get_author_name(recipe.id)
                 recipe.categories = find_all_category(recipe.id)
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
@@ -156,6 +159,7 @@ class GetFeedsByType(MethodView):
                 )
 
             for recipe in recipes:
+                recipe.author_name = get_author_name(recipe.id)
                 recipe.categories = find_all_category(recipe.id)
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
@@ -207,6 +211,7 @@ class GetFeedsByOrigin(MethodView):
                 )
 
             for recipe in recipes:
+                recipe.author_name = get_author_name(recipe.id)
                 recipe.categories = find_all_category(recipe.id)
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
@@ -236,11 +241,7 @@ class GetFeedsByTag(MethodView):
         try:
             tag = TagModel.query.filter_by(tagname=recipe_tag_in_search).first()
 
-            recipe_tags = (
-                RecipeTagRelationModel.query.filter_by(tag_id=tag.id)
-                .order_by(desc(RecipeModel.nutriscore))
-                .all()
-            )
+            recipe_tags = RecipeTagRelationModel.query.filter_by(tag_id=tag.id).all()
 
             recipes = []
 
@@ -258,6 +259,7 @@ class GetFeedsByTag(MethodView):
                 )
 
             for recipe in recipes:
+                recipe.author_name = get_author_name(recipe.id)
                 recipe.categories = find_all_category(recipe.id)
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
@@ -384,6 +386,7 @@ class GetFeedsByCategory(MethodView):
                 )
 
             for recipe in recipes:
+                recipe.author_name = get_author_name(recipe.id)
                 recipe.categories = find_all_category(recipe.id)
                 recipe.type = find_all_type(recipe.id)
                 recipe.origin = find_all_origin(recipe.id)
