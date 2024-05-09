@@ -38,6 +38,9 @@ class RecipeRate(MethodView):
                     404,
                 )
 
+            if recipe.author_id == current_user_id:
+                return jsonify({"message": "you cannot rate your own recipe"}), 403
+
             if not rate_value:
                 return (
                     jsonify({"message", "The rate value is required"}),

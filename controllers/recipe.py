@@ -249,7 +249,7 @@ class RecipeRegister(MethodView):
             recipe.like_count = get_likes(recipe.id)
             recipe.rating = get_rating(recipe.id)
             recipe.is_chef_recipe = chef_recipe_check(recipe.id)
-            recipe.author_name = get_author_name(recipe.id)
+            # recipe.author_name = get_author_name(recipe.id)
 
         except IntegrityError:
             abort(400, message="recipe with that title already exists")
