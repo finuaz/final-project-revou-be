@@ -9,7 +9,7 @@ class IngredientModel(db.Model):
     __tablename__ = "Ingredient"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    ingredient = db.Column(db.String(40), nullable=False)
+    ingredient = db.Column(db.Text, nullable=False)
     ingredient_image = db.Column(db.String, nullable=True)
 
     created_at = db.Column(

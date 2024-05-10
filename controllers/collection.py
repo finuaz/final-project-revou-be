@@ -9,6 +9,7 @@ from flask_smorest import Blueprint, abort
 from sqlalchemy.exc import SQLAlchemyError
 from flask import jsonify, current_app
 from sqlalchemy import desc
+from extensions import cache
 
 from models import (
     RecipeModel,
@@ -54,7 +55,7 @@ class GetAllSelfCreatedRecipes(MethodView):
             )
 
             if not recipes:
-                abort(404, message="You have not created any recipe")
+                abort(404, message="You have not created any recipe yet")
 
             for recipe in recipes:
                 recipe.author_name = get_author_name(recipe.id)
@@ -82,7 +83,7 @@ class GetAllSelfCreatedRecipes(MethodView):
 class GetAllRecipesCreatedByUser(MethodView):
 
     @blp.response(200, RecipePlusPlusSchema(many=True))
-    # @cache.cached(timeout=60 / 2)
+    @cache.cached(timeout=60 / 2)
     # @jwt_required()
     def get(self, author_id):
 
@@ -122,7 +123,7 @@ class GetAllRecipesCreatedByUser(MethodView):
 class GetAllRecipesCreatedByUser(MethodView):
 
     @blp.response(200, RecipePlusPlusSchema(many=True))
-    # @cache.cached(timeout=60 / 2)
+    @cache.cached(timeout=60 / 2)
     # @jwt_required()
     def get(self, author_name_in_search):
         user = UserModel.query.filter_by(first_name=author_name_in_search).first()
