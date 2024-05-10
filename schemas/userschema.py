@@ -39,6 +39,9 @@ class UserGetProfileSchema(Schema):
     total_following = fields.Integer()
     total_follower = fields.Integer()
     view_count = fields.Integer()
+    social_facebook = fields.String()
+    social_instagram = fields.String()
+    social_tiktok = fields.String()
     created_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
     updated_at = fields.Str(dump_only=True, format="%Y-%m-%d %H:%M:%S")
 
