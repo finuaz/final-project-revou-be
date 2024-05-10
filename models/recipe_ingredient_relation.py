@@ -14,7 +14,7 @@ class RecipeIngredientRelationModel(db.Model):
     ingredient_id = db.Column(
         db.Integer, db.ForeignKey("Ingredient.id"), primary_key=True, nullable=False
     )
-    amount = db.Column(db.String(20), nullable=True)
+    amount = db.Column(db.String, nullable=True)
     created_at = db.Column(
         db.TIMESTAMP(timezone=True), nullable=False, server_default=func.now()
     )

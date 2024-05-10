@@ -37,4 +37,13 @@ from .feed_helpers import (
     get_rating,
 )
 
-from .user_helpers import count_following, count_follower
+from .user_helpers import (
+    count_following,
+    count_follower,
+    get_author_facebook,
+    get_author_instagram,
+    get_author_tiktok,
+    get_social_facebook,
+    get_social_instagram,
+    get_social_tiktok,
+)

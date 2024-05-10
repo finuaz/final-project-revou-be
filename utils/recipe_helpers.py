@@ -72,6 +72,10 @@ def find_ingredient(recipe_id):
             IngredientModel.query.get(recipe_ingredient.ingredient_id).ingredient
         )
         ingredient_member.append(recipe_ingredient.amount)
+        ingredient_member.append(
+            IngredientModel.query.get(recipe_ingredient.ingredient_id).ingredient_image
+        )
+
         ingredients.append(ingredient_member)
 
     return ingredients

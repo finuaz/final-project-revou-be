@@ -27,6 +27,11 @@ class RecipeLike(MethodView):
         try:
             current_user_id = get_jwt_identity()["id"]
 
+            recipe = RecipeModel.query.get(recipe_in_search)
+
+            if recipe.author_id == current_user_id:
+                return jsonify({"message": "you cannot like your own recipe"}), 403
+
             like = LikeModel(recipe_id=recipe_in_search, user_id=current_user_id)
 
             like.add_like()

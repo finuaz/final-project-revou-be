@@ -26,7 +26,14 @@ from schemas import (
     UserDeletionSchema,
     GetResetPasswordPackage,
 )
-from utils import count_following, count_follower, increment_view
+from utils import (
+    count_following,
+    count_follower,
+    increment_view,
+    get_social_facebook,
+    get_social_instagram,
+    get_social_tiktok,
+)
 
 logging.basicConfig(level=logging.INFO)
 
@@ -150,6 +157,10 @@ class UserGetOwnProfile(MethodView):
             user.total_following = count_following(user.id)
             user.total_follower = count_follower(user.id)
 
+            user.social_facebook = get_social_facebook(user.id)
+            user.social_instagram = get_social_instagram(user.id)
+            user.social_tiktok = get_social_tiktok(user.id)
+
             serialized_user = UserGetProfileSchema().dump(user)
             return jsonify(serialized_user), 200
         except SQLAlchemyError as e:
@@ -178,6 +189,10 @@ class GetProfileByUsername(MethodView):
 
             user.total_following = count_following(user.id)
             user.total_follower = count_follower(user.id)
+
+            user.social_facebook = get_social_facebook(user.id)
+            user.social_instagram = get_social_instagram(user.id)
+            user.social_tiktok = get_social_tiktok(user.id)
 
             increment_view(user)
 
@@ -209,6 +224,10 @@ class GetProfileById(MethodView):
 
             user.total_following = count_following(user.id)
             user.total_follower = count_follower(user.id)
+
+            user.social_facebook = get_social_facebook(user.id)
+            user.social_instagram = get_social_instagram(user.id)
+            user.social_tiktok = get_social_tiktok(user.id)
 
             increment_view(user)
 

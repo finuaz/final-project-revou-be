@@ -30,6 +30,7 @@ from models import (
     RateModel,
     CommentModel,
     UserModel,
+    SocialModel,
 )
 from schemas import RecipeSchema, RecipePlusPlusSchema, CommentSchema
 from utils import (
@@ -59,6 +60,9 @@ from utils import (
     chef_recipe_check,
     ingredient_default_images,
     get_author_name,
+    get_author_facebook,
+    get_author_tiktok,
+    get_author_instagram,
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -250,6 +254,9 @@ class RecipeRegister(MethodView):
             recipe.rating = get_rating(recipe.id)
             recipe.is_chef_recipe = chef_recipe_check(recipe.id)
             recipe.author_name = get_author_name(recipe.id)
+            recipe.author_facebook = get_author_facebook(recipe.id)
+            recipe.author_instagram = get_author_instagram(recipe.id)
+            recipe.author_tiktok = get_author_tiktok(recipe.id)
 
         except IntegrityError:
             abort(400, message="recipe with that title already exists")
@@ -268,6 +275,9 @@ class RecipeDetailsById(MethodView):
                 return jsonify({"message": "the recipe is not found"}), 404
 
             recipe.author_name = get_author_name(recipe_in_details_by_id)
+            recipe.author_facebook = get_author_facebook(recipe_in_details_by_id)
+            recipe.author_instagram = get_author_instagram(recipe_in_details_by_id)
+            recipe.author_tiktok = get_author_tiktok(recipe_in_details_by_id)
 
             # finding category, type, origin, tag, attachment
             recipe.categories = find_category(recipe_in_details_by_id)
@@ -318,12 +328,6 @@ class RecipeDetailsById(MethodView):
             abort(500, "Internal Server Error")
 
 
-# def get_author_name(recipe_id):
-#     author_id = RecipeModel.query.filter_by(id=recipe_id).first().author_id
-#     author_name = UserModel.query.filter_by(id=author_id).first().username
-#     return author_name
-
-
 @blp.route("/recipes/details/<string:recipe_in_details_by_title>")
 class RecipeDetailsByTitle(MethodView):
 
@@ -340,6 +344,9 @@ class RecipeDetailsByTitle(MethodView):
                 )
 
             recipe.author_name = get_author_name(recipe.id)
+            recipe.author_facebook = get_author_facebook(recipe.id)
+            recipe.author_instagram = get_author_instagram(recipe.id)
+            recipe.author_tiktok = get_author_tiktok(recipe.id)
 
             # finding category, type, origin, tag, attachment
             recipe.categories = find_category(recipe.id)
@@ -386,6 +393,14 @@ class RecipeDetailsByTitle(MethodView):
         except Exception as e:
             current_app.logger.error(f"An unexpected error occurred: {str(e)}")
             abort(500, "Internal Server Error")
+
+
+# def get_author_facebook(recipe_id):
+#     recipe = RecipeModel.query.filter_by(id=recipe_id).first()
+#     author = UserModel.query.filter_by(id=recipe.author_id).first()
+#     social = SocialModel.query.filter_by(user_id=author.id).first()
+
+#     return social.facebook if social.facebook else None
 
 
 @blp.route("/recipes/edit/<int:recipe_in_details_by_id>")
