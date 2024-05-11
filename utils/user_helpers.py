@@ -37,17 +37,23 @@ def get_author_tiktok(recipe_id):
 
 def get_social_facebook(user_id):
     social = SocialModel.query.filter_by(user_id=user_id).first()
+    if not social:
+        return None
 
-    return social.facebook if social.facebook else None
+    return social.facebook
 
 
 def get_social_instagram(user_id):
     social = SocialModel.query.filter_by(user_id=user_id).first()
+    if not social:
+        return None
 
-    return social.instagram if social.instagram else None
+    return social.instagram
 
 
 def get_social_tiktok(user_id):
     social = SocialModel.query.filter_by(user_id=user_id).first()
+    if not social:
+        return None
 
-    return social.tiktok if social.tiktok else None
+    return social.tiktok
