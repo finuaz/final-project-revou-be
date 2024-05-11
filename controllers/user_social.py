@@ -69,7 +69,7 @@ class BatchConnect(MethodView):
 class SocialList(MethodView):
 
     @blp.response(201, UserSocialsSchema)
-    @cache.cached(timeout=60)
+    # @cache.cached(timeout=60)
     @jwt_required()
     def get(self):
         try:
@@ -92,7 +92,7 @@ class SocialList(MethodView):
 class SocialDisplay(MethodView):
 
     @blp.response(201, UserSocialsSchema)
-    @cache.cached(timeout=60 * 5)
+    # @cache.cached(timeout=60 * 5)
     def get(self, user_id_in_search):
 
         try:
