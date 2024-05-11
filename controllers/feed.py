@@ -4,7 +4,8 @@ from flask.views import MethodView
 from flask_smorest import Blueprint, abort, Page
 from sqlalchemy.exc import SQLAlchemyError
 from flask import jsonify, current_app, request
-from extensions import cache
+
+# from extensions import cache
 from sqlalchemy import desc, or_
 
 from models import (
@@ -42,7 +43,7 @@ blp = Blueprint("feeds", __name__, description="Operations on feeds")
 class GetAllFeeds(MethodView):
 
     @blp.response(200, RecipePlusPlusSchema(many=True))
-    @cache.cached(timeout=60 * 3)
+    # @cache.cached(timeout=60 * 3)
     def get(self):
         try:
 
@@ -78,7 +79,7 @@ class GetAllFeeds(MethodView):
 class GetFeedsByCategory(MethodView):
 
     @blp.response(200, RecipePlusPlusSchema(many=True))
-    @cache.cached(timeout=60 * 3)
+    # @cache.cached(timeout=60 * 3)
     def get(self, recipe_category_in_search):
         try:
             category = CategoryModel.query.filter_by(
@@ -132,7 +133,7 @@ class GetFeedsByCategory(MethodView):
 class GetFeedsByType(MethodView):
 
     @blp.response(200, RecipePlusPlusSchema(many=True))
-    @cache.cached(timeout=60 * 3)
+    # @cache.cached(timeout=60 * 3)
     def get(self, recipe_type_in_search):
         try:
             type = TypeModel.query.filter_by(type=recipe_type_in_search).first()

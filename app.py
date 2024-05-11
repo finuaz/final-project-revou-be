@@ -11,7 +11,8 @@ from psycopg2 import _psycopg
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from flask_cors import CORS
-from extensions import cache
+
+# from extensions import cache
 
 from controllers import (
     users_blueprint,
@@ -39,7 +40,7 @@ def create_app(is_test=False):
     load_dotenv()
 
     # Load common configuration settings from config.py
-    app.config.from_pyfile("config.py")
+    # app.config.from_pyfile("config.py")
 
     # Override configuration settings as needed
     app.config.update(
@@ -63,7 +64,7 @@ def create_app(is_test=False):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     # Initialize cache with app
-    cache.init_app(app)
+    # cache.init_app(app)
 
     # Initialize database
     db.init_app(app)

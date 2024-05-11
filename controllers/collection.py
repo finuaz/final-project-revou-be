@@ -83,7 +83,7 @@ class GetAllSelfCreatedRecipes(MethodView):
 class GetAllRecipesCreatedByUser(MethodView):
 
     @blp.response(200, RecipePlusPlusSchema(many=True))
-    @cache.cached(timeout=60 / 2)
+    # @cache.cached(timeout=60 / 2)
     # @jwt_required()
     def get(self, author_id):
 
@@ -123,7 +123,7 @@ class GetAllRecipesCreatedByUser(MethodView):
 class GetAllRecipesCreatedByUser(MethodView):
 
     @blp.response(200, RecipePlusPlusSchema(many=True))
-    @cache.cached(timeout=60 / 2)
+    # @cache.cached(timeout=60 / 2)
     # @jwt_required()
     def get(self, author_name_in_search):
         user = UserModel.query.filter_by(first_name=author_name_in_search).first()
