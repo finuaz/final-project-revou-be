@@ -31,6 +31,8 @@ def get_author_tiktok(recipe_id):
     recipe = RecipeModel.query.filter_by(id=recipe_id).first()
     author = UserModel.query.filter_by(id=recipe.author_id).first()
     social = SocialModel.query.filter_by(user_id=author.id).first()
+    if not social:
+        return None
 
     return social.tiktok if social.tiktok else None
 
