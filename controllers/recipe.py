@@ -632,6 +632,11 @@ class RecipeUpdate(MethodView):
             recipe.like_count = get_likes(recipe.id)
             recipe.rating = get_rating(recipe.id)
 
+            # recipe.author_name = get_author_name(recipe.id)
+            # recipe.author_facebook = get_author_facebook(recipe.id)
+            # recipe.author_instagram = get_author_instagram(recipe.id)
+            # recipe.author_tiktok = get_author_tiktok(recipe.id)
+
             return RecipePlusPlusSchema().dump(recipe), 200
 
         except Forbidden as e:

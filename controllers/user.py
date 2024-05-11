@@ -15,7 +15,7 @@ from passlib.hash import pbkdf2_sha512
 from extensions import cache
 from werkzeug.exceptions import Forbidden
 
-from models import UserModel, FollowingModel
+from models import UserModel, FollowingModel, SocialModel
 from schemas import (
     UserRegisterSchema,
     UserLoginSchema,
@@ -357,6 +357,7 @@ class UserDelete(MethodView):
         if user and pbkdf2_sha512.verify(user_data["password"], user.password):
             try:
 
+                SocialModel.query.filter_by(user_id=user_id).delete()
                 FollowingModel.query.filter_by(follower_id=user_id).delete()
                 FollowingModel.query.filter_by(followed_id=user_id).delete()
                 user.delete_user()
